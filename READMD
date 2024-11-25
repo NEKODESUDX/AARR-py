@@ -1,0 +1,8 @@
+pythonを公式サイトからインストール
+https://www.python.org/
+
+token.txtに改行で区切ってtokenをいれる
+
+build.bat
+run.bat
+を起動
