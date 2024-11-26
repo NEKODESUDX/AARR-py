@@ -36,6 +36,7 @@ def logo ():#line:19
     [3] active users only mentions
     [4] all user mentions
     [5] nickname changer
+    [6] emoji add
 
     [0] exit
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
