@@ -10,11 +10,15 @@
 pythonを公式サイトからインストール
 https://www.python.org/
 
-token.txtに改行で区切ってtokenをいれる
+1 token.txtに改行で区切ってtokenをいれる
 
-build.bat
-run.bat
+2 build.bat
+3 run.bat
 を起動
+
+リアクションアートの設定はart.txt
+絵文字追加時の名前指定はemojiname.txt
+絵文字url指定はemojiurl.txt
 
 Test version
  
@@ -22,12 +26,20 @@ Features
 Add reactions to the last 100 messages on all channels (channel can be specified)
 Mention mode to only active users (useful for bot padding)
 Do not get bot's uid.
+Add pictograms
+Reaction art
 
-Install python from official site
+Install python from the official site
 https://www.python.org/
 
-Put “token” in “token.txt” file by separating it with a new line
+1 Put “token” in token.txt, separated by a new line.
 
-build.bat
-run.bat
-Run
+2 build.bat
+3 run.bat
+Run “build.bat
+
+Set reaction art in art.txt
+Specify the name for adding pictograms in emojiname.txt
+Specify the pictogram url in emojiurl.txt
+
+Translated with DeepL.com (free version)
