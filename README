@@ -13,3 +13,19 @@ token.txtに改行で区切ってtokenをいれる
 build.bat
 run.bat
 を起動
+
+Test version
+ 
+Features
+Add reactions to the last 100 messages on all channels (channel can be specified)
+Mention mode to only active users (useful for bot padding)
+Do not get bot's uid.
+
+Install python from official site
+https://www.python.org/
+
+Put “token” in “token.txt” file by separating it with a new line
+
+build.bat
+run.bat
+Run
