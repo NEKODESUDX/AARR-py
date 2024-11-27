@@ -30,7 +30,7 @@ def logo ():#line:19
     
     {colorama.Fore.LIGHTCYAN_EX}
     >select number
-※このツールは開発中の為joinはまだ実装してません
+
     [1] server join
     [2] mass Reaction spammer
     [3] active users only mentions
