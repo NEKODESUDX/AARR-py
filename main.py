@@ -30,7 +30,7 @@ def logo ():#line:19
     
     {colorama.Fore.LIGHTCYAN_EX}
     >select number
-※このツールは開発中の為joinはまだ実装してません
+※このツールは開発中の為joinは動作しない可能性があります
     [1] server join
     [2] mass Reaction spammer
     [3] active users only mentions
@@ -38,800 +38,866 @@ def logo ():#line:19
     [5] nickname changer
     [6] emoji add
     [7] reaction art
+    [8] poll spammer
 
     [0] exit
     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     {colorama.Fore.RESET}
-    """)#line:53
-def get_session (proxy =None ):#line:56
-    O0OOOO0O0OOOOOO0O =requests .Session ()#line:57
-    if proxy :#line:58
-        O0OOOO0O0OOOOOO0O .proxies ={"http":proxy ,"https":proxy }#line:59
-    return O0OOOO0O0OOOOOO0O #line:60
-def get_headers (O0000O0OOO00000O0 ):#line:62
-    return {"Authorization":O0000O0OOO00000O0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:67
-def send_message_with_mention (O00O0000OO0OO00OO ,OOOO0OOO0OOOO000O ,O0OOOOOOO000OOOO0 ,O000000OO0O000000 ):#line:70
-    OOO0O0O00O0O00OO0 =get_session ()#line:71
-    O0000000OO00OOO0O =get_headers (O00O0000OO0OO00OO )#line:72
-    if O000000OO0O000000 :#line:74
-        OOOOOOOO00O0O0OOO =random .choice (O000000OO0O000000 )#line:75
-        O0OOOOOOO000OOOO0 +=f" <@{OOOOOOOO00O0O0OOO}>"#line:76
-    OOOOOO00OOO0000O0 =OOO0O0O00O0O00OO0 .post (f"https://discord.com/api/v9/channels/{OOOO0OOO0OOOO000O}/messages",headers =O0000000OO00OOO0O ,json ={"content":O0OOOOOOO000OOOO0 })#line:82
-    if OOOOOO00OOO0000O0 .status_code in [200 ,201 ]:#line:83
-        print (f"[+] Message sent to channel {OOOO0OOO0OOOO000O}")#line:84
-    elif OOOOOO00OOO0000O0 .status_code ==429 :#line:85
-        print ("[-] Rate limited. Please wait before retrying.")#line:86
-        OOOOO0O0O0O0O0O00 =OOOOOO00OOO0000O0 .json ().get ("retry_after",1 )#line:87
-        time .sleep (OOOOO0O0O0O0O0O00 )#line:88
-    else :#line:89
-        print (f"[!] Error occurred: {OOOOOO00OOO0000O0.status_code}")#line:90
-def fetch_messages (OO00OOOOO00OOO0O0 ,O00O0O00O000OOOOO ,limit =100 ):#line:93
-    OOO0OO0000O0OOOO0 ={"Authorization":OO00OOOOO00OOO0O0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:98
-    O00000OOO0O0000O0 =requests .get (f"https://discord.com/api/v9/channels/{O00O0O00O000OOOOO}/messages?limit={limit}",headers =OOO0OO0000O0OOOO0 )#line:102
-    if O00000OOO0O0000O0 .status_code ==200 :#line:103
-        return O00000OOO0O0000O0 .json ()#line:104
-    else :#line:105
-        print (f"[!] Failed to fetch messages. HTTP Status Code: {O00000OOO0O0000O0.status_code}")#line:106
-        return []#line:107
-import concurrent .futures #line:109
-def reaction_spammer ():#line:111
-    try :#line:112
-        with open ("token.txt")as O0OOOOO0000OO0OO0 :#line:113
-            OOOO00OO0OO0O0O0O =[O00OOOOO00O0OOOO0 .strip ()for O00OOOOO00O0OOOO0 in O0OOOOO0000OO0OO0 .readlines ()if O00OOOOO00O0OOOO0 .strip ()]#line:114
-    except (FileNotFoundError ,KeyError ):#line:115
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:116
-        return #line:117
-    OO00O0OOOOOOO0O00 =input ("Server ID?: ").strip ()#line:119
-    O00000OOOO00O000O =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:121
-    if O00000OOOO00O000O =='2':#line:122
-        O0O00OO000000O000 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:123
-        O0O0OO0OOOO0O0000 =[OOOOOOO0000O0000O .strip ()for OOOOOOO0000O0000O in O0O00OO000000O000 if OOOOOOO0000O0000O .strip ()]#line:124
-    else :#line:125
-        O0O0OO0OOOO0O0000 =[]#line:126
-        for OOO0O0OOO00OO0000 in OOOO00OO0OO0O0O0O :#line:127
-            try :#line:128
-                O0O0OO0OOOO0O0000 .extend (fetch_channels (OOO0O0OOO00OO0000 ,OO00O0OOOOOOO0O00 ))#line:129
-            except Exception as O000O000O00OO00O0 :#line:130
-                print (f"[!] Failed to fetch channels for token. Error: {O000O000O00OO00O0}")#line:131
-                continue #line:132
-    O0000O0OO000OOOOO =input ("Select your emoji (a, b, c, ... or custom emojis): ").strip ()#line:134
-    OOO00000O0O0OOOOO =input ("Delay between reactions (in seconds)?: ").strip ()#line:135
-    try :#line:137
-        OOO00000O0O0OOOOO =float (OOO00000O0O0OOOOO )#line:138
-        if OOO00000O0O0OOOOO <0 :#line:139
-            raise ValueError #line:140
-    except ValueError :#line:141
-        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:142
-        OOO00000O0O0OOOOO =1.0 #line:143
-    O0000OO0O00O00OO0 =[]#line:145
-    for O00000OO000O0OOO0 in O0000O0OO000OOOOO .split (","):#line:146
-        O00000OO000O0OOO0 =O00000OO000O0OOO0 .strip ().lower ()#line:147
-        if O00000OO000O0OOO0 in alphabet_to_flag :#line:148
-            O0000OO0O00O00OO0 .append (alphabet_to_flag [O00000OO000O0OOO0 ])#line:149
-        else :#line:150
-            O0000OO0O00O00OO0 .append (O00000OO000O0OOO0 )#line:151
-    if not O0000OO0O00O00OO0 :#line:153
-        print (f"{colorama.Fore.RED}    [!] No valid emojis provided!{colorama.Fore.RESET}")#line:154
-        return #line:155
-    def O0000O00OO0OOOO0O (OO0OO0OO0000OO00O ):#line:157
-        for OO0000OO0O0O0O0OO in O0O0OO0OOOO0O0000 :#line:158
-            try :#line:159
-                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {OO0000OO0O0O0O0OO}...{colorama.Fore.RESET}")#line:160
-                O0O00O00OO00O0OO0 =fetch_messages (OO0OO0OO0000OO00O ,OO0000OO0O0O0O0OO ,limit =100 )#line:161
-                if not O0O00O00OO00O0OO0 :#line:162
-                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:163
-                    continue #line:164
-                for OOO0OOO00O0OOOO0O in O0O00O00OO00O0OO0 :#line:166
-                    for O0OO0O00OO0O0O0OO in O0000OO0O00O00OO0 :#line:167
-                        reactionput (OO0OO0OO0000OO00O ,OO0000OO0O0O0O0OO ,OOO0OOO00O0OOOO0O ['id'],O0OO0O00OO0O0O0OO )#line:168
-                        time .sleep (OOO00000O0O0OOOOO )#line:169
-            except Exception as OO000O0OO0OOOOOO0 :#line:170
-                print (f"[!] Error processing channel {OO0000OO0O0O0O0OO}. Error: {OO000O0OO0OOOOOO0}")#line:171
-                continue #line:172
-    with concurrent .futures .ThreadPoolExecutor ()as OO0OOO000O00O0O00 :#line:174
-        O0O0O000O0OO0O0O0 =[OO0OOO000O00O0O00 .submit (O0000O00OO0OOOO0O ,O0000OOOOO00OOO00 )for O0000OOOOO00OOO00 in OOOO00OO0OO0O0O0O ]#line:175
-        concurrent .futures .wait (O0O0O000O0OO0O0O0 )#line:176
-import requests #line:179
-import json #line:180
-import time #line:181
-import colorama #line:182
-alphabet_to_flag ={'a':'🇦','b':'🇧','c':'🇨','d':'🇩','e':'🇪','f':'🇫','g':'🇬','h':'🇭','i':'🇮','j':'🇯','k':'🇰','l':'🇱','m':'🇲','n':'🇳','o':'🇴','p':'🇵','q':'🇶','r':'🇷','s':'🇸','t':'🇹','u':'🇺','v':'🇻','w':'🇼','x':'🇽','y':'🇾','z':'🇿'}#line:190
-def fetch_channels (O0O0000OO0O00OOO0 ,O0O000OO0O0OOO000 ):#line:192
-    OO0O00000OOO0000O =f"https://discord.com/api/v9/guilds/{O0O000OO0O0OOO000}/channels"#line:193
-    O0OO0OO0O00000O0O ={"Authorization":O0O0000OO0O00OOO0 }#line:194
-    O0O0OOO00OO00O00O =requests .get (OO0O00000OOO0000O ,headers =O0OO0OO0O00000O0O )#line:195
-    if O0O0OOO00OO00O00O .status_code ==200 :#line:196
-        return [O0O0O000OO0OOO0O0 ['id']for O0O0O000OO0OOO0O0 in O0O0OOO00OO00O00O .json ()if O0O0O000OO0OOO0O0 ['type']==0 ]#line:197
-    else :#line:198
-        raise Exception (f"Failed to fetch channels: {O0O0OOO00OO00O00O.status_code} - {O0O0OOO00OO00O00O.text}")#line:199
-def fetch_messages (O00OO0OO0OOOOOO0O ,O000000OOO0O0O0OO ,limit =100 ):#line:201
-    O00000OO0O0O0O000 =f"https://discord.com/api/v9/channels/{O000000OOO0O0O0OO}/messages?limit={limit}"#line:202
-    OOOO0OOOOO0O000O0 ={"Authorization":O00OO0OO0OOOOOO0O }#line:203
-    O00O0OO00O0OO000O =requests .get (O00000OO0O0O0O000 ,headers =OOOO0OOOOO0O000O0 )#line:204
-    if O00O0OO00O0OO000O .status_code ==200 :#line:205
-        return O00O0OO00O0OO000O .json ()#line:206
-    else :#line:207
-        print (f"[!] Failed to fetch messages: {O00O0OO00O0OO000O.status_code} - {O00O0OO00O0OO000O.text}")#line:208
-        return []#line:209
-def reactionput (O0OOO00000O0O0OOO ,O000O0O000OO00000 ,O00000000O0O00OOO ,OOOO00O0O000OOOOO ):#line:211
-    O000O00000O0OO0O0 =f"https://discord.com/api/v9/channels/{O000O0O000OO00000}/messages/{O00000000O0O00OOO}/reactions/{OOOO00O0O000OOOOO}/@me"#line:212
-    O0OOOOOOOOOOO00OO ={"Authorization":O0OOO00000O0O0OOO ,"Content-Type":"application/json"}#line:213
-    OOO000OOO0OO0000O =requests .put (O000O00000O0OO0O0 ,headers =O0OOOOOOOOOOO00OO )#line:214
-    if OOO000OOO0OO0000O .status_code not in [204 ,200 ]:#line:215
-        print (f"{colorama.Fore.RED}    [!] Failed to add reaction: {OOO000OOO0OO0000O.status_code} - {OOO000OOO0OO0000O.text}{colorama.Fore.RESET}")#line:216
-import random #line:218
-def reaction_art ():#line:220
-    try :#line:221
-        with open ("token.txt",encoding ="utf-8")as O0000OO0OO0OO0OOO :#line:222
-            O00O00OOO0OOOO000 =[O000000O0OOOO0OO0 .strip ()for O000000O0OOOO0OO0 in O0000OO0OO0OO0OOO .readlines ()if O000000O0OOOO0OO0 .strip ()]#line:223
-    except (FileNotFoundError ,KeyError ):#line:224
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:225
-        return #line:226
-    O0OOO00000O0000OO =input ("Server ID?: ").strip ()#line:228
-    OOOOOOO0000O0O0OO =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:230
-    if OOOOOOO0000O0O0OO =='2':#line:231
-        O000O00O00OOOOOOO =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:232
-        O0OOO0OO0O0O00000 =[O0OO0000OO0OOOO00 .strip ()for O0OO0000OO0OOOO00 in O000O00O00OOOOOOO if O0OO0000OO0OOOO00 .strip ()]#line:233
-    else :#line:234
-        O0OOO0OO0O0O00000 =[]#line:235
-        for OO0OO0000OOO00000 in O00O00OOO0OOOO000 :#line:236
-            try :#line:237
-                O0OOO0OO0O0O00000 .extend (fetch_channels (OO0OO0000OOO00000 ,O0OOO00000O0000OO ))#line:238
-            except Exception as O0OOO0O0OOO000OO0 :#line:239
-                print (f"[!] Failed to fetch channels for token. Error: {O0OOO0O0OOO000OO0}")#line:240
-                continue #line:241
-        random .shuffle (O0OOO0OO0O0O00000 )#line:242
-    OOO000O0OOOO0000O =input ("Delay between reactions (in seconds)?: ").strip ()#line:244
-    try :#line:246
-        OOO000O0OOOO0000O =float (OOO000O0OOOO0000O )#line:247
-        if OOO000O0OOOO0000O <0 :#line:248
-            raise ValueError #line:249
-    except ValueError :#line:250
-        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:251
-        OOO000O0OOOO0000O =1.0 #line:252
-    try :#line:254
-        with open ("art.txt",encoding ="utf-8")as O0O0O0000OO0OO000 :#line:255
-            O00O000OOOOOO0OO0 =[OOO0OO0O0OO0O00O0 .strip ()for OOO0OO0O0OO0O00O0 in O0O0O0000OO0OO000 .readlines ()if OOO0OO0O0OO0O00O0 .strip ()]#line:256
-    except (FileNotFoundError ,KeyError ):#line:257
-        print (f"{colorama.Fore.RED}    [!] Error: art.txt file not found or empty!{colorama.Fore.RESET}")#line:258
-        return #line:259
-    except UnicodeDecodeError as O0OOO0O0OOO000OO0 :#line:260
-        print (f"{colorama.Fore.RED}    [!] Error decoding art.txt: {str(O0OOO0O0OOO000OO0)}{colorama.Fore.RESET}")#line:261
-        return #line:262
-    if not O00O000OOOOOO0OO0 :#line:264
-        print (f"{colorama.Fore.RED}    [!] No valid art provided in art.txt!{colorama.Fore.RESET}")#line:265
-        return #line:266
-    O00O000OOOOOO0OO0 .reverse ()#line:269
-    for OO0OO0000OOO00000 in O00O00OOO0OOOO000 :#line:271
-        for O0OO0OOOO0OO0O00O in O0OOO0OO0O0O00000 :#line:272
-            try :#line:273
-                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {O0OO0OOOO0OO0O00O}...{colorama.Fore.RESET}")#line:274
-                O00000OO00000OOOO =fetch_messages (OO0OO0000OOO00000 ,O0OO0OOOO0OO0O00O ,limit =100 )#line:277
-                if not O00000OO00000OOOO :#line:278
-                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:279
-                    continue #line:280
-                for O0OOOO0O0O00OO00O ,O000000OOO0OO0OO0 in enumerate (O00000OO00000OOOO ):#line:283
-                    OOO0OO0O00O00OO0O =O00O000OOOOOO0OO0 [O0OOOO0O0O00OO00O %len (O00O000OOOOOO0OO0 )].split (',')#line:284
-                    for OO0OO0OO00O00O0O0 in OOO0OO0O00O00OO0O :#line:285
-                        reactionput (OO0OO0000OOO00000 ,O0OO0OOOO0OO0O00O ,O000000OOO0OO0OO0 ['id'],OO0OO0OO00O00O0O0 .strip ())#line:286
-                        print (f"Adding reaction '{OO0OO0OO00O00O0O0.strip()}' to message {O000000OOO0OO0OO0['id']} in channel {O0OO0OOOO0OO0O00O}")#line:287
-                        time .sleep (OOO000O0OOOO0000O )#line:288
-            except Exception as O0OOO0O0OOO000OO0 :#line:289
-                print (f"[!] Error processing channel {O0OO0OOOO0OO0O00O}. Error: {O0OOO0O0OOO000OO0}")#line:290
-                continue #line:291
-    def OO0O0O0000O0O0O0O (O000O000OOO0000O0 ):#line:296
-        for O00OOOOOOO0OO0O00 in O0OOO0OO0O0O00000 :#line:297
-            try :#line:298
-                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {O00OOOOOOO0OO0O00}...{colorama.Fore.RESET}")#line:299
-                OOOOO0O00O0O0OOO0 =fetch_messages (O000O000OOO0000O0 ,O00OOOOOOO0OO0O00 ,limit =100 )#line:300
-                if not OOOOO0O00O0O0OOO0 :#line:301
-                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:302
-                    continue #line:303
-                for O00OO0OO0O0000O0O in OOOOO0O00O0O0OOO0 :#line:305
-                    for O0O0OOO0O0OOO0O0O in OOO0OO0O00O00OO0O :#line:306
-                        reactionput (O000O000OOO0000O0 ,O00OOOOOOO0OO0O00 ,O00OO0OO0O0000O0O ['id'],O0O0OOO0O0OOO0O0O )#line:307
-                        time .sleep (OOO000O0OOOO0000O )#line:308
-            except Exception as OO0O000OO00OOO000 :#line:309
-                print (f"[!] Error processing channel {O00OOOOOOO0OO0O00}. Error: {OO0O000OO00OOO000}")#line:310
-                continue #line:311
-    with concurrent .futures .ThreadPoolExecutor ()as OO000O0O0O00O00OO :#line:313
-        O000O0OO0000O0O00 =[OO000O0O0O00O00OO .submit (OO0O0O0000O0O0O0O ,OOO0O0OO0OO0O000O )for OOO0O0OO0OO0O000O in O00O00OOO0OOOO000 ]#line:314
-        concurrent .futures .wait (O000O0OO0000O0O00 )#line:315
-def update_group_ids ():#line:318
-    try :#line:319
-        with open ("token.txt")as OOO00000OOOO0000O :#line:320
-            O000OOO00OO0O00OO =[O0O0000OOO00O00OO .strip ()for O0O0000OOO00O00OO in OOO00000OOOO0000O .readlines ()if O0O0000OOO00O00OO .strip ()]#line:321
-        OO00000000O0O0OO0 =O000OOO00OO0O00OO [0 ]#line:322
-    except (FileNotFoundError ,KeyError ):#line:323
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:324
-        return #line:325
-    OOO0OO00OOOO0OO00 ={"Authorization":OO00000000O0O0OO0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:331
-    O00000O00OO0OO0O0 =requests .get ('https://discord.com/api/v9/users/@me/channels',headers =OOO0OO00OOOO0OO00 )#line:333
-    if O00000O00OO0OO0O0 .status_code ==200 :#line:334
-        O0OO0O000O0O0O0O0 =O00000O00OO0OO0O0 .json ()#line:335
-        with open ("group_id.txt","w")as OO0OOO00O0O0OOOO0 :#line:336
-            for OOOOO0O00OOOO0OOO in O0OO0O000O0O0O0O0 :#line:337
-                if OOOOO0O00OOOO0OOO ['type']==3 :#line:338
-                    OO0OOO00O0O0OOOO0 .write (OOOOO0O00OOOO0OOO ['id']+'\n')#line:339
-        print (f"{colorama.Fore.LIGHTGREEN_EX}    [+] Group IDs updated successfully.{colorama.Fore.RESET}")#line:340
-    else :#line:341
-        print (f"{colorama.Fore.LIGHTRED_EX}    [!] Failed to retrieve group IDs. HTTP Status Code: {O00000O00OO0OO0O0.status_code}{colorama.Fore.RESET}")#line:342
-import requests #line:344
-import requests #line:346
-def fetch_channels (O000OO00O000000O0 ,O00OO00000000O000 ):#line:348
-    try :#line:349
-        OO0OO0O00OO00OOOO =requests .Session ()#line:350
-        O0OOO00OO0O000O0O =get_headers (O000OO00O000000O0 )#line:351
-        O0O000OOOO0000OOO =OO0OO0O00OO00OOOO .get (f"https://discord.com/api/v9/guilds/{O00OO00000000O000}/channels",headers =O0OOO00OO0O000O0O ,timeout =10 )#line:358
-        if O0O000OOOO0000OOO .status_code ==200 :#line:361
-            try :#line:362
-                OOOO0OOOO00O00O00 =O0O000OOOO0000OOO .json ()#line:363
-                return [O00O0OOOOO00OOO0O ['id']for O00O0OOOOO00OOO0O in OOOO0OOOO00O00O00 if O00O0OOOOO00OOO0O .get ('type')==0 ]#line:364
-            except ValueError :#line:365
-                print ("[!] Error: Response was not valid JSON.")#line:366
-                return []#line:367
-        elif O0O000OOOO0000OOO .status_code ==401 :#line:368
-            print ("[!] Error: Unauthorized - check your token.")#line:369
-        elif O0O000OOOO0000OOO .status_code ==403 :#line:370
-            print ("[!] Error: Forbidden - you lack permissions.")#line:371
-        elif O0O000OOOO0000OOO .status_code ==404 :#line:372
-            print ("[!] Error: Server not found - check the server ID.")#line:373
-        else :#line:374
-            print (f"[!] Error: Unexpected status code {O0O000OOOO0000OOO.status_code}.")#line:375
-        return []#line:378
-    except requests .exceptions .Timeout :#line:380
-        print ("[!] Error: Request timed out. Check your connection or try again later.")#line:381
-        return []#line:382
-    except requests .exceptions .RequestException as O0OO0O0O00O00OO00 :#line:383
-        print (f"[!] Error: An error occurred while fetching channels: {O0OO0O0O00O00OO00}")#line:384
-        return []#line:385
-def extract_uids_from_messages (OOOOOOOOO000O0OO0 ):#line:391
-    OO0O0O00OOO0O00OO =set ()#line:392
-    for O00OOOO0000O0OO0O in OOOOOOOOO000O0OO0 :#line:393
-        OO0O0O00OOO0O00OO .add (O00OOOO0000O0OO0O ['author']['id'])#line:394
-    return list (OO0O0O00OOO0O00OO )#line:395
-def send_message_with_mention (O0O0O0OO00OO000OO ,O0O0OOOOOO0000OOO ,O0OOOO0O00000OO00 ,O000O000OOO0000OO ):#line:397
-    OO0OOOOOO000000O0 =get_session ()#line:398
-    OO000O0000O000000 =get_headers (O0O0O0OO00OO000OO )#line:399
-    if O000O000OOO0000OO :#line:401
-        O0O00O000OOOO0000 =random .choice (O000O000OOO0000OO )#line:402
-        O0OOOO0O00000OO00 +=f" <@{O0O00O000OOOO0000}>"#line:403
-    O0O00O0O00000OO00 =OO0OOOOOO000000O0 .post (f"https://discord.com/api/v9/channels/{O0O0OOOOOO0000OOO}/messages",headers =OO000O0000O000000 ,json ={"content":O0OOOO0O00000OO00 })#line:409
-    if O0O00O0O00000OO00 .status_code in [200 ,201 ]:#line:410
-        print (f"[+] Message sent to channel {O0O0OOOOOO0000OOO}")#line:411
-    elif O0O00O0O00000OO00 .status_code ==429 :#line:412
-        print ("[-] Rate limited. Please wait before retrying.")#line:413
-        OOO0OO00O00000000 =O0O00O0O00000OO00 .json ().get ("retry_after",1 )#line:414
-        time .sleep (OOO0OO00O00000000 )#line:415
-    else :#line:416
-        print (f"[!] Error occurred: {O0O00O0O00000OO00.status_code}")#line:417
-def send_messages_with_mentions ():#line:418
-    try :#line:419
-        with open ("token.txt")as OO0O0OO000000O000 :#line:420
-            OO00O0O0OOO000OO0 =[OO00OOO0000000O00 .strip ()for OO00OOO0000000O00 in OO0O0OO000000O000 .readlines ()if OO00OOO0000000O00 .strip ()]#line:421
-    except (FileNotFoundError ,KeyError ):#line:422
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:423
-        return #line:424
-    O0OO00O0O0OO0O00O =input ("Server ID?: ").strip ()#line:426
-    OO00O0O00O00OO000 =input ("Delay between messages (in seconds)?: ").strip ()#line:427
-    OO0O000OO0OOOOO00 =input ("Number of messages to send?: ").strip ()#line:428
-    O0O0OO0O00O00OOOO =input ("Message content?: ").strip ()#line:429
-    OO0OO0O0O00OOO0OO =input ("Blacklist User IDs (comma-separated)?: ").strip ().split (',')#line:430
-    OO0OO0O0O00OOO0OO =[OO0OOO00O000O0O00 .strip ()for OO0OOO00O000O0O00 in OO0OO0O0O00OOO0OO if OO0OOO00O000O0O00 .strip ()]#line:431
-    try :#line:433
-        OO00O0O00O00OO000 =float (OO00O0O00O00OO000 )#line:434
-        if OO00O0O00O00OO000 <0 :#line:435
-            raise ValueError #line:436
-    except ValueError :#line:437
-        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:438
-        OO00O0O00O00OO000 =1.0 #line:439
-    try :#line:441
-        OO0O000OO0OOOOO00 =int (OO0O000OO0OOOOO00 )#line:442
-        if OO0O000OO0OOOOO00 <=0 :#line:443
-            raise ValueError #line:444
-    except ValueError :#line:445
-        print (f"{colorama.Fore.RED}    [!] Invalid send count. Using default count of 1.{colorama.Fore.RESET}")#line:446
-        OO0O000OO0OOOOO00 =1 #line:447
-    OOO0000O0O00O0OO0 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:449
-    if OOO0000O0O00O0OO0 =='2':#line:450
-        O00OO0O000000OOO0 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:451
-        O00OO0O000000OOO0 =[OOOOO000OO0OOO0OO .strip ()for OOOOO000OO0OOO0OO in O00OO0O000000OOO0 if OOOOO000OO0OOO0OO .strip ()]#line:452
-    else :#line:453
-        O00OO0O000000OOO0 =[]#line:454
-    OOOOO000000000OO0 =set ()#line:456
-    for O00000000O00O0OO0 in OO00O0O0OOO000OO0 :#line:457
-        O000O0O00OO0OOO0O =fetch_channels (O00000000O00O0OO0 ,O0OO00O0O0OO0O00O )#line:458
-        for O00OO00O00O0O0OO0 in O000O0O00OO0OOO0O :#line:459
-            OOOOO00000OOO0000 =fetch_messages (O00000000O00O0OO0 ,O00OO00O00O0O0OO0 ,limit =100 )#line:460
-            O000OOO00O0O0O0OO =extract_uids_from_messages (OOOOO00000OOO0000 )#line:461
-            OOOOO000000000OO0 .update (O000OOO00O0O0O0OO )#line:462
-    OOOOO000000000OO0 =list (set (OOOOO000000000OO0 )-set (OO0OO0O0O00OOO0OO ))#line:465
-    for _OO0O0OO00OO0OO0OO in range (OO0O000OO0OOOOO00 ):#line:467
-        for O00000000O00O0OO0 in OO00O0O0OOO000OO0 :#line:468
-            if O00OO0O000000OOO0 :#line:469
-                O000O0O00OO0OOO0O =O00OO0O000000OOO0 #line:470
-            for O00OO00O00O0O0OO0 in O000O0O00OO0OOO0O :#line:471
-                send_message_with_mention (O00000000O00O0OO0 ,O00OO00O00O0O0OO0 ,O0O0OO0O00O00OOOO ,OOOOO000000000OO0 )#line:472
-                time .sleep (OO00O0O00O00OO000 )#line:473
-def join_discord_invite ():#line:478
-    try :#line:479
-        with open ("token.txt")as OOO0O0O00O00000O0 :#line:480
-            OOOOOO0O00000O0O0 =[O00OOOOO0OO0O00O0 .strip ()for O00OOOOO0OO0O00O0 in OOO0O0O00O00000O0 .readlines ()if O00OOOOO0OO0O00O0 .strip ()]#line:481
-    except (FileNotFoundError ,KeyError ):#line:482
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:483
-        return #line:484
-    OOOO000OO00O000O0 =input ("Invite Code?: discord.gg/").strip ()#line:486
-    for O00OO0OOO000O0000 in OOOOOO0O00000O0O0 :#line:489
-        joiner (O00OO0OOO000O0000 ,OOOO000OO00O000O0 )#line:490
-import json ,time ,base64 ,random ,requests #line:492
-def cookieset (O0O0OOOO0OO0OOO0O ):#line:494
-    O00000OO0O00OO000 =O0O0OOOO0OO0OOO0O .get ("https://discord.com/app")#line:495
-    return O00000OO0O00OO000 .cookies .get_dict ()#line:496
-def generatexspandua (OOO00OO0OO0OO00O0 ):#line:498
-    O0OO0O0000OO0OOOO =["Android","Windows","Macintosh"]#line:499
-    O0OO0OO0OOOOOOO0O =random .choice (O0OO0O0000OO0OOOO )#line:500
-    if O0OO0OO0OOOOOOO0O =="Macintosh":#line:501
-        O0O00OO0000OO00O0 =f"Intel Mac OS X 10_15_"+str (random .randint (5 ,7 ))#line:502
-        OOOOOO0OOOOOOO0O0 ="Macintosh; Intel Mac OS X "+O0O00OO0000OO00O0 #line:503
-        O0OOO0OO0O00O0OOO ="x86_64"#line:504
-    elif O0OO0OO0OOOOOOO0O =="Windows":#line:505
-        O0O00OO0000OO00O0 =f'{random.choice([6.0, 10.0, 11.0])}'#line:506
-        OOOOOO0OOOOOOO0O0 ="Windows NT "+O0O00OO0000OO00O0 +" Win64; x64"#line:507
-        O0OOO0OO0O00O0OOO ="x86_64"#line:508
-    else :#line:509
-        O0O00OO0000OO00O0 ="13"#line:510
-        OOOOOO0OOOOOOO0O0 =f"Linux; Android 13; Pixel 6a"#line:511
-        O0OOO0OO0O00O0OOO ="aarch64"#line:512
-    O0O0OOO0O0000OO0O ={"os":O0OO0OO0OOOOOOO0O ,"browser":"Discord Client","release_channel":"stable","client_version":"1.0.9001","os_version":O0O00OO0000OO00O0 ,"os_arch":O0OOO0OO0O00O0OOO ,"system_locale":"ja-JP","client_build_number":OOO00OO0OO0OO00O0 ,"client_event_source":None ,"design_id":0 }#line:525
-    OO0OO000OO0000O0O =f"Mozilla/5.0 ({OOOOOO0OOOOOOO0O0}) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9001 Chrome/112.0.0.0 Electron/9.3.5 Safari/537.36"#line:526
-    return base64 .b64encode (json .dumps (O0O0OOO0O0000OO0O ,separators =(',',':')).encode ()).decode (),OO0OO000OO0000O0O #line:527
-def joiner (OOO000OO000OOOO0O ,O0O000O00O0O0O00O ,OOOO000O0O0OO0O0O ,O0O0O0O0OO0O000O0 ):#line:529
-  OOO0OO0O00000OO00 =get_session (OOOO000O0O0OO0O0O )#line:530
-  OO0OOO000000O00O0 =cookieset (OOO0OO0O00000OO00 )#line:531
-  OO0OOO000000O00O0 ["locale"]="ja-JP"#line:532
-  OOOOOO00O0OOO0OOO =201211 #line:533
-  O0O0O0OO00OOO0O00 ,O00OO0OO00OO00OOO =generatexspandua (OOOOOO00O0OOO0OOO )#line:534
-  O0OOOOO0OOO000O00 ={"Authorization":OOO000OO000OOOO0O ,"accept":"*/*","accept-language":"ja-JP","connection":"keep-alive","DNT":"1","origin":"https://discord.com","sec-fetch-dest":"empty","sec-fetch-mode":"cors","sec-fetch-site":"same-origin","referer":"https://discord.com/channels/@me","TE":"Trailers","user-agent":O00OO0OO00OO00OOO ,"X-Super-Properties":O0O0O0OO00OOO0O00 ,}#line:549
-  O0OOOOOOOO0O0O0O0 =OOO0OO0O00000OO00 .post ("https://discord.com/api/v9/invites/"+O0O000O00O0O0O00O ,headers =O0OOOOO0OOO000O00 ,json ={},cookies =OO0OOO000000O00O0 )#line:551
-  if O0OOOOOOOO0O0O0O0 .status_code ==200 :#line:552
-    print ("[+] Probably joined "+OOO000OO000OOOO0O )#line:553
-    if "show_verification_form"in O0OOOOOOOO0O0O0O0 .json ():#line:554
-      bypass (OOO000OO000OOOO0O ,O0OOOOOOOO0O0O0O0 .json ()["guild"]["id"],OOO0OO0O00000OO00 ,O0OOOOO0OOO000O00 )#line:555
-    return #line:556
-  elif "captcha_key"in O0OOOOOOOO0O0O0O0 .text and O0OOOOOOOO0O0O0O0 .status_code ==400 :#line:557
-    print ("[!] Hcaptcha interference "+OOO000OO000OOOO0O )#line:558
-    return #line:559
-  elif O0OOOOOOOO0O0O0O0 .status_code ==401 :#line:560
-    print ("[!] Token is dead "+OOO000OO000OOOO0O )#line:561
-    return #line:562
-  elif O0OOOOOOOO0O0O0O0 .status_code ==403 :#line:563
-    if "message"in O0OOOOOOOO0O0O0O0 .json ():#line:564
-      if O0OOOOOOOO0O0O0O0 .json ()["message"]=="Unknown Message":#line:565
-        print ("[!] Unknown error "+OOO000OO000OOOO0O )#line:566
-        return #line:567
-      else :#line:568
-        print ("[!] Verification required "+OOO000OO000OOOO0O )#line:569
-        return #line:570
-    else :#line:571
-      print ("[!] Error occurred "+OOO000OO000OOOO0O )#line:572
-      return #line:573
-  elif O0OOOOOOOO0O0O0O0 .status_code ==429 :#line:574
-    print ("[!] Token rate-limited "+OOO000OO000OOOO0O )#line:575
-    return #line:576
-  elif O0OOOOOOOO0O0O0O0 .status_code ==400 :#line:577
-    if "captcha_key"in O0OOOOOOOO0O0O0O0 .json ():#line:578
-      print ("[!] Hcaptcha interference "+OOO000OO000OOOO0O )#line:579
-      return #line:580
-    else :#line:581
-      print ("[!] Error occurred "+OOO000OO000OOOO0O )#line:582
-      return #line:583
-  elif O0OOOOOOOO0O0O0O0 .status_code ==401 :#line:584
-    print ("[!] Token is dead "+OOO000OO000OOOO0O )#line:585
-    return #line:586
-  elif O0OOOOOOOO0O0O0O0 .status_code ==403 :#line:587
-    if "message"in O0OOOOOOOO0O0O0O0 .json ():#line:588
-      if O0OOOOOOOO0O0O0O0 .json ()["message"]=="Unknown Message":#line:589
-        print ("[!] Unknown error "+OOO000OO000OOOO0O )#line:590
-        return #line:591
-      else :#line:592
-        print ("[!] Verification required "+OOO000OO000OOOO0O )#line:593
-        return #line:594
-    else :#line:595
-      print ("[!] Error occurred "+OOO000OO000OOOO0O )#line:596
-  elif O0OOOOOOOO0O0O0O0 .status_code ==429 :#line:597
-    print ("[!] Token rate-limited "+OOO000OO000OOOO0O )#line:598
-    return #line:599
-  else :#line:600
-    print ("[!] Error occurred "+OOO000OO000OOOO0O )#line:601
-    return #line:602
-def update_group_ids ():#line:605
-    OO00OO000OOOO0O00 =input ("Invite Code?: ").strip ()#line:606
-    try :#line:607
-        with open ("token.txt")as O000OO0O00OO0OOO0 :#line:608
-            O00O00O0OO0OOO000 =[O00OOO0O0OO0000O0 .strip ()for O00OOO0O0OO0000O0 in O000OO0O00OO0OOO0 .readlines ()if O00OOO0O0OO0000O0 .strip ()]#line:609
-    except (FileNotFoundError ,KeyError ):#line:610
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:611
-        return #line:612
-    O0000O00O0O000OO0 =requests .Session ()#line:614
-    for O00O00000O0OO00OO in O00O00O0OO0OOO000 :#line:615
-        joiner (O00O00000O0OO00OO ,OO00OO000OOOO0O00 ,O0000O00O0O000OO0 )#line:616
-        time .sleep (2 )#line:617
-    input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:619
-def bypass (O0OOO00O000000000 ,O0000O0OOOO0O0OOO ,O0O0000OO0OOO0OO0 ,OOO0OO0OOO0OOO00O ):#line:622
-    try :#line:623
-        O00OOOOOOOO000OO0 =O0O0000OO0OOO0OO0 .get (f"https://discord.com/api/v9/guilds/{O0000O0OOOO0O0OOO}/member-verification?with_guild=false",headers =OOO0OO0OOO0OOO00O ).json ()#line:624
-        O000O00O0OO00O0O0 =O0O0000OO0OOO0OO0 .put (f"https://discord.com/api/v9/guilds/{O0000O0OOOO0O0OOO}/requests/@me",headers =OOO0OO0OOO0OOO00O ,json =O00OOOOOOOO000OO0 )#line:625
-        if O000O00O0OO00O0O0 .status_code ==201 :#line:626
-            print (f"[+] MemberscreeningBypassed {O0OOO00O000000000}")#line:627
-            return #line:628
-        else :#line:629
-            print (f"[!] Bypassが出来ませんでした {O0OOO00O000000000}")#line:630
-            return #line:631
-    except Exception as O0OO000OO0OO00OO0 :#line:632
-        print (f"[!] エラーが発生しました。{O0OO000OO0OO00OO0}")#line:633
-session =requests .Session ()#line:635
-def reactionput (OO0OO0O00O0OOO00O ,OOO00000000OO000O ,OOO00OO000OO000O0 ,OO0OOOO00OOO0O0OO ,proxy =None ):#line:638
-    OO00OOOO0OO00OOO0 =get_session (proxy )#line:639
-    O0OOO0OOO00OO00OO =get_headers (OO00OOOO0OO00OOO0 )#line:640
-    O0OOO0OOO00OO00OO ["Authorization"]=OO0OO0O00O0OOO00O #line:641
-    OO0OOOO00OOO0O0OO =requests .utils .quote (OO0OOOO00OOO0O0OO )#line:643
-    O0O000O000OOOOOO0 =OO00OOOO0OO00OOO0 .put (f"https://discord.com/api/v9/channels/{OOO00000000OO000O}/messages/{OOO00OO000OO000O0}/reactions/{OO0OOOO00OOO0O0OO}/%40me?location=Message&type=0",headers =O0OOO0OOO00OO00OO )#line:647
-    if O0O000O000OOOOOO0 .status_code in [200 ,204 ]:#line:648
-        print (f"[+] Reaction '{OO0OOOO00OOO0O0OO}' added successfully to message {OOO00OO000OO000O0}")#line:649
-    elif O0O000O000OOOOOO0 .status_code ==429 :#line:650
-        print ("[-] Rate limited. Please wait before retrying.")#line:651
-        OOO0OO0O00O0OOOOO =O0O000O000OOOOOO0 .json ().get ("retry_after",1 )#line:652
-        time .sleep (OOO0OO0O00O0OOOOO )#line:653
-    elif O0O000O000OOOOOO0 .status_code ==401 :#line:654
-        print ("[-] Invalid or expired token.")#line:655
-    else :#line:656
-        print (f"[!] Error occurred: {O0O000O000OOOOOO0.status_code}")#line:657
-def generatexspandua (O0O00O0O00O00OOOO ):#line:660
-  O0O00OOOOO0O0OO00 =["Android","Windows","Macintosh"]#line:661
-  OO0O0O00O00OOO00O =random .choice (O0O00OOOOO0O0OO00 )#line:662
-  if OO0O0O00O00OOO00O =="Macintosh":#line:663
-    O00OOO000OO0O000O =f"Intel Mac OS X 10_15_"+str (random .randint (5 ,7 ))#line:664
-    OOOO0OOOO0OO0000O ="Macintosh; Intel Mac OS X "+O00OOO000OO0O000O #line:665
-    O0OO0O00OOOOOOOO0 ="x86_64"#line:666
-  if OO0O0O00O00OOO00O =="Windows":#line:667
-    O00OOO000OO0O000O =f'{random.choice([6.0,10.0,11.0])}'#line:668
-    OOOO0OOOO0OO0000O ="Windows NT "+O00OOO000OO0O000O +" Win64; x64"#line:669
-    O0OO0O00OOOOOOOO0 ="x86_64"#line:670
-  if OO0O0O00O00OOO00O =="Android":#line:671
-    O00OOO000OO0O000O ="13"#line:672
-    OOOO0OOOO0OO0000O =f"Linux; Android 13; Pixel 6a"#line:673
-    O0OO0O00OOOOOOOO0 ="aarch64"#line:674
-  OO0OO00O0OO00OOOO ={"os":OO0O0O00O00OOO00O ,"browser":"Discord Client","release_channel":"stable","client_version":"1.0.9001","os_version":O00OOO000OO0O000O ,"os_arch":O0OO0O00OOOOOOOO0 ,"system_locale":"ja-JP","client_build_number":O0O00O0O00O00OOOO ,"client_event_source":None ,"design_id":0 }#line:675
-  OO0OO00OOO00OO000 =f"Mozilla/5.0 ({OOOO0OOOO0OO0000O}) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9001 Chrome/112.0.0.0 Electron/9.3.5 Safari/537.36"#line:676
-  return base64 .b64encode (json .dumps (OO0OO00O0OO00OOOO ,separators =(',',':')).encode ()).decode (),OO0OO00OOO00OO000 #line:677
-import base64 #line:679
-def nickchanger ():#line:682
-    try :#line:683
-        with open ("token.txt")as OO0OO00OOO0OOOO00 :#line:684
-            OO0000OOO0OOO0OO0 =[OOOOOOO0OOO00O0O0 .strip ()for OOOOOOO0OOO00O0O0 in OO0OO00OOO0OOOO00 .readlines ()if OOOOOOO0OOO00O0O0 .strip ()]#line:685
-    except (FileNotFoundError ,KeyError ):#line:686
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:687
-        return #line:688
-    O000O0O000O000OO0 =input ("Server ID?: ").strip ()#line:690
-    O0O00OOO00O0OOOO0 =input ("Nickname?: ").strip ()#line:691
-    OOO00OO00OOOO0O0O =input ("Delay (in seconds)?: ").strip ()#line:692
-    try :#line:694
-        OOO00OO00OOOO0O0O =float (OOO00OO00OOOO0O0O )#line:695
-        if OOO00OO00OOOO0O0O <0 :#line:696
-            raise ValueError #line:697
-    except ValueError :#line:698
-        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:699
-        OOO00OO00OOOO0O0O =1.0 #line:700
-    for OO00OOOOO00O0OOOO in OO0000OOO0OOO0OO0 :#line:702
-        O0O00O00OO0O0O0O0 ={"Authorization":OO00OOOOO00O0OOOO ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:707
-        O00O0O0O0OOO0OOOO ={"nick":O0O00OOO00O0OOOO0 }#line:708
-        O00O00O0OO0O00O0O =requests .patch (f"https://discord.com/api/v9/guilds/{O000O0O000O000OO0}/members/@me",headers =O0O00O00OO0O0O0O0 ,json =O00O0O0O0OOO0OOOO )#line:709
-        if O00O00O0OO0O00O0O .status_code ==200 :#line:711
-            print (f"{colorama.Fore.LIGHTGREEN_EX}    [+] Nickname changed to '{O0O00OOO00O0OOOO0}' successfully for token {OO00OOOOO00O0OOOO}.{colorama.Fore.RESET}")#line:712
-        elif O00O00O0OO0O00O0O .status_code ==429 :#line:713
-            print (f"{colorama.Fore.RED}    [!] Rate limited. Please wait before retrying for token {OO00OOOOO00O0OOOO}.{colorama.Fore.RESET}")#line:714
-            O0O00O0000OO0000O =O00O00O0OO0O00O0O .json ().get ("retry_after",1 )#line:715
-            time .sleep (O0O00O0000OO0000O )#line:716
-        else :#line:717
-            print (f"{colorama.Fore.RED}    [!] Error occurred: {O00O00O0OO0O00O0O.status_code} for token {OO00OOOOO00O0OOOO}.{colorama.Fore.RESET}")#line:718
-        time .sleep (OOO00OO00OOOO0O0O )#line:720
-import json ,websocket ,threading ,tls_client ,random ,time #line:724
-session =tls_client .Session (client_identifier ="chrome112",random_tls_extension_order =True )#line:726
-class Utils :#line:728
-    @staticmethod #line:729
-    def rangeCorrector (OO0O00O00O0OOO000 ):#line:730
-        if [0 ,99 ]not in OO0O00O00O0OOO000 :#line:731
-            OO0O00O00O0OOO000 .insert (0 ,[0 ,99 ])#line:732
-        return OO0O00O00O0OOO000 #line:733
-    @staticmethod #line:735
-    def getRanges (O0O000OOO00O000OO ,OOO0O0OOOO0000OO0 ,O0O0000OO0O0OOO00 ):#line:736
-        O0OOO0OOO0O000000 =int (O0O000OOO00O000OO *OOO0O0OOOO0000OO0 )#line:737
-        OOOO00OOO0OO0000O =[[O0OOO0OOO0O000000 ,O0OOO0OOO0O000000 +99 ]]#line:738
-        if O0O0000OO0O0OOO00 >O0OOO0OOO0O000000 +99 :#line:739
-            OOOO00OOO0OO0000O .append ([O0OOO0OOO0O000000 +100 ,O0OOO0OOO0O000000 +199 ])#line:740
-        return Utils .rangeCorrector (OOOO00OOO0OO0000O )#line:741
-    @staticmethod #line:743
-    def parseGuildMemberListUpdate (O0O0O00O0OOO00O0O ):#line:744
-        O000OO00O0O0OO0OO ={"online_count":O0O0O00O0OOO00O0O ["d"]["online_count"],"member_count":O0O0O00O0OOO00O0O ["d"]["member_count"],"id":O0O0O00O0OOO00O0O ["d"]["id"],"guild_id":O0O0O00O0OOO00O0O ["d"]["guild_id"],"hoisted_roles":O0O0O00O0OOO00O0O ["d"]["groups"],"types":[],"locations":[],"updates":[],}#line:754
-        for OOO00OOO0O0OO0000 in O0O0O00O0OOO00O0O ["d"]["ops"]:#line:756
-            O000OO00O0O0OO0OO ["types"].append (OOO00OOO0O0OO0000 ["op"])#line:757
-            if OOO00OOO0O0OO0000 ["op"]in ("SYNC","INVALIDATE"):#line:758
-                O000OO00O0O0OO0OO ["locations"].append (OOO00OOO0O0OO0000 ["range"])#line:759
-                if OOO00OOO0O0OO0000 ["op"]=="SYNC":#line:760
-                    O000OO00O0O0OO0OO ["updates"].append (OOO00OOO0O0OO0000 ["items"])#line:761
-                else :#line:762
-                    O000OO00O0O0OO0OO ["updates"].append ([])#line:763
-            elif OOO00OOO0O0OO0000 ["op"]in ("INSERT","UPDATE","DELETE"):#line:764
-                O000OO00O0O0OO0OO ["locations"].append (OOO00OOO0O0OO0000 ["index"])#line:765
-                if OOO00OOO0O0OO0000 ["op"]=="DELETE":#line:766
-                    O000OO00O0O0OO0OO ["updates"].append ([])#line:767
-                else :#line:768
-                    O000OO00O0O0OO0OO ["updates"].append (OOO00OOO0O0OO0000 ["item"])#line:769
-        return O000OO00O0O0OO0OO #line:770
-class DiscordSocket (websocket .WebSocketApp ):#line:772
-    def __init__ (OO00O0O00000OOOOO ,OO00O00000000O00O ,O0OOO0OO00OOO000O ,OOO00O00O000OO000 ):#line:773
-        OO00O0O00000OOOOO .token =OO00O00000000O00O #line:774
-        OO00O0O00000OOOOO .guild_id =O0OOO0OO00OOO000O #line:775
-        OO00O0O00000OOOOO .channel_id =OOO00O00O000OO000 #line:776
-        OO00O0O00000OOOOO .socket_headers ={"Accept-Encoding":"gzip, deflate, br","Accept-Language":"en-US,en;q=0.9","Cache-Control":"no-cache","Pragma":"no-cache","Sec-WebSocket-Extensions":"permessage-deflate; client_max_window_bits","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",}#line:784
-        super ().__init__ ("wss://gateway.discord.gg/?encoding=json&v=9",header =OO00O0O00000OOOOO .socket_headers ,on_open =lambda O0OO00OOO000OO000 :OO00O0O00000OOOOO .sock_open (O0OO00OOO000OO000 ),on_message =lambda O0OO0O0O0OO0000OO ,OO0OO0O0000OOOOOO :OO00O0O00000OOOOO .sock_message (O0OO0O0O0OO0000OO ,OO0OO0O0000OOOOOO ),on_close =lambda OO0O0OOOO0OO0O00O ,OO000OOOO00OOOOOO ,OOO0OO00OO00OOOO0 :OO00O0O00000OOOOO .sock_close (OO0O0OOOO0OO0O00O ,OO000OOOO00OOOOOO ,OOO0OO00OO00OOOO0 ),)#line:793
-        OO00O0O00000OOOOO .endScraping =False #line:795
-        OO00O0O00000OOOOO .guilds ={}#line:796
-        OO00O0O00000OOOOO .members ={}#line:797
-        OO00O0O00000OOOOO .ranges =[[0 ,0 ]]#line:798
-        OO00O0O00000OOOOO .lastRange =0 #line:799
-        OO00O0O00000OOOOO .packets_recv =0 #line:800
-    def run (OOO00O0O0000OO0O0 ):#line:802
-        OOO00O0O0000OO0O0 .run_forever ()#line:803
-        return OOO00O0O0000OO0O0 .members #line:804
-    def scrapeUsers (OOOO00OO0OOOO00OO ):#line:806
-        if not OOOO00OO0OOOO00OO .endScraping :#line:807
-            OOOO00OO0OOOO00OO .send ('{"op":14,"d":{"guild_id":"'+OOOO00OO0OOOO00OO .guild_id +'","typing":true,"activities":true,"threads":true,"channels":{"'+OOOO00OO0OOOO00OO .channel_id +'":'+json .dumps (OOOO00OO0OOOO00OO .ranges )+"}}}")#line:816
-    def sock_open (OO0OOO00OOOO0OO0O ,O00OOO0O0OO0O0OOO ):#line:818
-        OO0OOO00OOOO0OO0O .send ('{"op":2,"d":{"token":"'+OO0OOO00OOOO0OO0O .token +'","capabilities":125,"properties":{"os":"Windows NT","browser":"Chrome","device":"","system_locale":"it-IT","browser_user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36","browser_version":"119.0","os_version":"10","referrer":"","referring_domain":"","referrer_current":"","referring_domain_current":"","release_channel":"stable","client_build_number":103981,"client_event_source":null},"presence":{"status":"online","since":0,"activities":[],"afk":false},"compress":false,"client_state":{"guild_hashes":{},"highest_last_message_id":"0","read_state_version":0,"user_guild_settings_version":-1,"user_settings_version":-1}}}')#line:823
-    def heartbeatThread (OO000O0O0O00OO0O0 ,O0O00OOOO0OOOO00O ):#line:825
-        try :#line:826
-            while True :#line:827
-                OO000O0O0O00OO0O0 .send ('{"op":1,"d":'+str (OO000O0O0O00OO0O0 .packets_recv )+"}")#line:828
-                time .sleep (O0O00OOOO0OOOO00O )#line:829
-        except Exception as O0OO0OO00OO00O000 :#line:830
-            pass #line:831
-    def sock_message (OOO0OO00O0OOO0O0O ,OO00O0OO0O00OOO0O ,OO000O0O0OO0OO0OO ):#line:833
-        OOO0OO00OO0O0OOOO =json .loads (OO000O0O0OO0OO0OO )#line:834
-        if OOO0OO00OO0O0OOOO is None :#line:835
-            return #line:836
-        if OOO0OO00OO0O0OOOO ["op"]!=11 :#line:837
-            OOO0OO00O0OOO0O0O .packets_recv +=1 #line:838
-        if OOO0OO00OO0O0OOOO ["op"]==10 :#line:839
-            threading .Thread (target =OOO0OO00O0OOO0O0O .heartbeatThread ,args =(OOO0OO00OO0O0OOOO ["d"]["heartbeat_interval"]/1000 ,),daemon =True ,).start ()#line:844
-        if OOO0OO00OO0O0OOOO ["t"]=="READY":#line:845
-            for OO0O00O0O00OO0O00 in OOO0OO00OO0O0OOOO ["d"]["guilds"]:#line:846
-                OOO0OO00O0OOO0O0O .guilds [OO0O00O0O00OO0O00 ["id"]]={"member_count":OO0O00O0O00OO0O00 ["member_count"]}#line:847
-        if OOO0OO00OO0O0OOOO ["t"]=="READY_SUPPLEMENTAL":#line:848
-            OOO0OO00O0OOO0O0O .ranges =Utils .getRanges (0 ,100 ,OOO0OO00O0OOO0O0O .guilds [OOO0OO00O0OOO0O0O .guild_id ]["member_count"])#line:851
-            OOO0OO00O0OOO0O0O .scrapeUsers ()#line:852
-        elif OOO0OO00OO0O0OOOO ["t"]=="GUILD_MEMBER_LIST_UPDATE":#line:853
-            OO00OO0O0O0O0OO0O =Utils .parseGuildMemberListUpdate (OOO0OO00OO0O0OOOO )#line:854
-            if OO00OO0O0O0O0OO0O ["guild_id"]==OOO0OO00O0OOO0O0O .guild_id and ("SYNC"in OO00OO0O0O0O0OO0O ["types"]or "UPDATE"in OO00OO0O0O0O0OO0O ["types"]):#line:858
-                for O0OOOO0O0OOO0O00O ,OO0O0000O00OOO00O in enumerate (OO00OO0O0O0O0OO0O ["types"]):#line:859
-                    if OO0O0000O00OOO00O =="SYNC":#line:860
-                        if len (OO00OO0O0O0O0OO0O ["updates"][O0OOOO0O0OOO0O00O ])==0 :#line:861
-                            OOO0OO00O0OOO0O0O .endScraping =True #line:862
-                            break #line:863
-                        for OOOOO0OOOOO0O0OO0 in OO00OO0O0O0O0OO0O ["updates"][O0OOOO0O0OOO0O00O ]:#line:865
-                            if "member"in OOOOO0OOOOO0O0OO0 :#line:866
-                                OOOO00OO0000OO000 =OOOOO0OOOOO0O0OO0 ["member"]#line:867
-                                OOOOOO0OO00OOO00O ={"tag":OOOO00OO0000OO000 ["user"]["username"]+"#"+OOOO00OO0000OO000 ["user"]["discriminator"],"id":OOOO00OO0000OO000 ["user"]["id"],}#line:873
-                                if not OOOO00OO0000OO000 ["user"].get ("bot"):#line:874
-                                    OOO0OO00O0OOO0O0O .members [OOOO00OO0000OO000 ["user"]["id"]]=OOOOOO0OO00OOO00O #line:875
-                    elif OO0O0000O00OOO00O =="UPDATE":#line:877
-                        for OOOOO0OOOOO0O0OO0 in OO00OO0O0O0O0OO0O ["updates"][O0OOOO0O0OOO0O00O ]:#line:878
-                            if "member"in OOOOO0OOOOO0O0OO0 :#line:879
-                                OOOO00OO0000OO000 =OOOOO0OOOOO0O0OO0 ["member"]#line:880
-                                OOOOOO0OO00OOO00O ={"tag":OOOO00OO0000OO000 ["user"]["username"]+"#"+OOOO00OO0000OO000 ["user"]["discriminator"],"id":OOOO00OO0000OO000 ["user"]["id"],}#line:886
-                                if not OOOO00OO0000OO000 ["user"].get ("bot"):#line:887
-                                    OOO0OO00O0OOO0O0O .members [OOOO00OO0000OO000 ["user"]["id"]]=OOOOOO0OO00OOO00O #line:888
-                    OOO0OO00O0OOO0O0O .lastRange +=1 #line:890
-                    OOO0OO00O0OOO0O0O .ranges =Utils .getRanges (OOO0OO00O0OOO0O0O .lastRange ,100 ,OOO0OO00O0OOO0O0O .guilds [OOO0OO00O0OOO0O0O .guild_id ]["member_count"])#line:893
-                    time .sleep (0.45 )#line:894
-                    OOO0OO00O0OOO0O0O .scrapeUsers ()#line:895
-            if OOO0OO00O0OOO0O0O .endScraping :#line:897
-                OOO0OO00O0OOO0O0O .close ()#line:898
-    def sock_close (O0O0O000OO0OOO0OO ,O00OO0O00OOO0O00O ,OO0O00O00O0O0OO0O ,OOOO0OO000O00O00O ):#line:900
-        pass #line:901
-def scrape (O0000O00O00000000 ,OO0000000O0OO000O ,OOO0OO0000O00OO00 ):#line:903
-    O00O00O0OOOO00OOO =DiscordSocket (O0000O00O00000000 ,OO0000000O0OO000O ,OOO0OO0000O00OO00 )#line:904
-    return O00O00O0OOOO00OOO .run ()#line:905
-def member_scrape (O000OOO0O0O00OO0O ,OO0OOOO000OOOOOOO ,OOO000O0O0O0OO00O ):#line:907
-    O0OO0O00O0OOO0000 =[]#line:908
-    for OOOOO000OO0O0OOOO in O000OOO0O0O00OO0O :#line:909
-        O0O00OOO0O0OO0OOO ={"Authorization":OOOOO000OO0O0OOOO ,"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}#line:910
-        O000O0O0O00O00OO0 =session .get (f"https://canary.discord.com/api/v9/guilds/{OO0OOOO000OOOOOOO}",headers =O0O00OOO0O0OO0OOO )#line:911
-        if O000O0O0O00O00OO0 .status_code ==200 :#line:912
-            O0OO0O00O0OOO0000 .append (OOOOO000OO0O0OOOO )#line:913
-            break #line:914
-    if not O0OO0O00O0OOO0000 :#line:915
-        print ("missing access")#line:916
-    OOOOO000OO0O0OOOO =random .choice (O0OO0O00O0OOO0000 )#line:918
-    OOOOOO0O000O0000O =scrape (OOOOO000OO0O0OOOO ,OO0OOOO000OOOOOOO ,OOO000O0O0O0OO00O )#line:919
-    OO0OO00O000OOO0O0 =[f"<@{OO00O0O000O0OO000}>"for OO00O0O000O0OO000 in [int (O00000OOOO0O00OOO )for O00000OOOO0O00OOO in OOOOOO0O000O0000O .keys ()]]#line:920
-    print (f"[SUCCESS] {len(OO0OO00O000OOO0O0)} scraped members")#line:921
-    return OO0OO00O000OOO0O0 #line:922
-def spammer_menu ():#line:924
-    try :#line:925
-        with open ("token.txt")as OOO0O00OOO0OOO000 :#line:926
-            OOOO000000000O0OO =[O0O0OO00OO0O0OO0O .strip ()for O0O0OO00OO0O0OO0O in OOO0O00OOO0OOO000 .readlines ()if O0O0OO00OO0O0OO0O .strip ()]#line:927
-    except (FileNotFoundError ,KeyError ):#line:928
-        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:929
-        return #line:930
-    OO00OOOOO0O00OOOO =input ("Server ID?: ").strip ()#line:932
-    OO00O00000OO00O0O =input ("Message?: ").strip ()#line:933
-    O0OOO00OOOO00O000 =input ("Random mention (True/False)?: ").strip ().lower ()=='true'#line:934
-    O0O0O0OOOOO0O00OO =input ("Delay between messages (in seconds)?: ").strip ()#line:935
-    O0OO000O0O0O0O0OO =input ("Number of messages to send?: ").strip ()#line:936
-    O00OOOOOO000OOOO0 =input ("Blacklist User IDs (comma-separated) (Leave blank to skip)?: ").strip ().split (',')#line:937
-    O00OOOOOO000OOOO0 =[f"<@{O0O0OO00000OOOO00.strip()}>"for O0O0OO00000OOOO00 in O00OOOOOO000OOOO0 if O0O0OO00000OOOO00 .strip ()]#line:938
-    try :#line:940
-        O0O0O0OOOOO0O00OO =float (O0O0O0OOOOO0O00OO )#line:941
-        if O0O0O0OOOOO0O00OO <0 :#line:942
-            raise ValueError #line:943
-    except ValueError :#line:944
-        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:945
-        O0O0O0OOOOO0O00OO =1.0 #line:946
-    try :#line:948
-        O0OO000O0O0O0O0OO =int (O0OO000O0O0O0O0OO )#line:949
-        if O0OO000O0O0O0O0OO <=0 :#line:950
-            raise ValueError #line:951
-    except ValueError :#line:952
-        print (f"{colorama.Fore.RED}    [!] Invalid send count. Using default count of 1.{colorama.Fore.RESET}")#line:953
-        O0OO000O0O0O0O0OO =1 #line:954
-    OO0O0OO0O0OOO0O00 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:956
-    if OO0O0OO0O0OOO0O00 =='2':#line:957
-        O0000OO0O000OO000 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:958
-        O0000OO0O000OO000 =[OO0O0O0O0OO0O0O00 .strip ()for OO0O0O0O0OO0O0O00 in O0000OO0O000OO000 if OO0O0O0O0OO0O0O00 .strip ()]#line:959
-    else :#line:960
-        O0000OO0O000OO000 =fetch_channels (OOOO000000000O0OO [0 ],OO00OOOOO0O00OOOO )#line:961
-    OO00O000OO0O0O00O =None #line:963
-    spammer (OOOO000000000O0OO ,OO00OOOOO0O00OOOO ,O0000OO0O000OO000 ,OO00O00000OO00O0O ,O0OOO00OOOO00O000 ,O00OOOOOO000OOOO0 ,OO00O000OO0O0O00O ,O0OO000O0O0O0O0OO )#line:965
-    input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:967
-import discum #line:969
-import random #line:970
-import time #line:971
-def userget (O0OOO00OO0O0O0000 ,O0O00O00O00000OO0 ,OOOOOO00OO0O0OO0O ):#line:973
-    OOOOO0OO0OO0000O0 =[]#line:974
-    OOO0O0OOO000O0OO0 =discum .Client (token =O0OOO00OO0O0O0000 ,log =False )#line:975
-    def OO00O00OOO0OOOO0O (OO000O0OOOOO00O00 ):#line:977
-        if OOO0O0OOO000O0OO0 .gateway .finishedMemberFetching (O0O00O00O00000OO0 ):#line:978
-            OO00O000000OOO0OO =len (OOO0O0OOO000O0OO0 .gateway .session .guild (O0O00O00O00000OO0 ).members )#line:979
-            print (str (OO00O000000OOO0OO )+' members fetched')#line:980
-            OOO0O0OOO000O0OO0 .gateway .removeCommand ({'function':OO00O00OOO0OOOO0O ,'params':{}})#line:981
-            OOO0O0OOO000O0OO0 .gateway .close ()#line:982
-    def O00O0O000OOO0O000 (O0O00OO00O00O000O ,OO0O0O0000OO0O0OO ):#line:984
-        OOO0O0OOO000O0OO0 .gateway .fetchMembers (O0O00OO00O00O000O ,OO0O0O0000OO0O0OO ,keep ='all',wait =1 )#line:985
-        OOO0O0OOO000O0OO0 .gateway .command ({'function':OO00O00OOO0OOOO0O ,'params':{}})#line:986
-        OOO0O0OOO000O0OO0 .gateway .run ()#line:987
-        OOO0O0OOO000O0OO0 .gateway .resetSession ()#line:988
-        return OOO0O0OOO000O0OO0 .gateway .session .guild (O0O00OO00O00O000O ).members #line:989
-    OOO000O0O0OOO000O =O00O0O000OOO0O000 (O0O00O00O00000OO0 ,OOOOOO00OO0O0OO0O )#line:991
-    for O0OO0O00O0O0O0O0O in OOO000O0O0OOO000O :#line:992
-        if O0OO0O00O0O0O0O0O not in OOOOO0OO0OO0000O0 :#line:993
-            OOOOO0OO0OO0000O0 .append (f"<@{O0OO0O00O0O0O0O0O}>")#line:994
-    return OOOOO0OO0OO0000O0 #line:995
-def spammer (O000OO0O00O00O0OO ,OOOOO0OO0O0OOO0O0 ,OOO0OOOOO0OOO0000 ,O000O00OO0OOO00OO ,OOOOOO0O0OO00O0O0 ,OOO0OOOO0O0000O0O ,OO0000O0OO00OO0OO ,O00OOO00O0OOOO0O0 ):#line:1000
-    OOOOO00O0O000O0OO =get_session (OO0000O0OO00OO0OO )#line:1001
-    OOO0O00OOOOOOO000 =0 #line:1002
-    OO00OOO0OOOOOO0O0 =userget (O000OO0O00O00O0OO [0 ],OOOOO0OO0O0OOO0O0 ,OOO0OOOOO0OOO0000 [0 ])#line:1004
-    OO00OOO0OOOOOO0O0 =[O0OOOO0OO00OO00OO for O0OOOO0OO00OO00OO in OO00OOO0OOOOOO0O0 if O0OOOO0OO00OO00OO not in OOO0OOOO0O0000O0O ]#line:1007
-    for _O0000O000OO0OO0O0 in range (O00OOO00O0OOOO0O0 ):#line:1009
-        O00OO000OOO00OO0O =O000OO0O00O00O0OO [OOO0O00OOOOOOO000 ]#line:1010
-        O00OOOOO0O00OOOOO =get_headers (O00OO000OOO00OO0O )#line:1011
-        for O000O0OOOO0000OO0 in OOO0OOOOO0OOO0000 :#line:1012
-            OOOOOO0000OOO0O0O =O000O00OO0OOO00OO #line:1013
-            if OOOOOO0O0OO00O0O0 and OO00OOO0OOOOOO0O0 :#line:1014
-                O0O0OOOOOO0O00O0O =random .choice (OO00OOO0OOOOOO0O0 )#line:1015
-                OOOOOO0000OOO0O0O +=f" {O0O0OOOOOO0O00O0O}"#line:1016
-            O000000OO0O0OOOO0 =OOOOO00O0O000O0OO .post (f"https://discord.com/api/v9/channels/{O000O0OOOO0000OO0}/messages",json ={"content":OOOOOO0000OOO0O0O },headers =O00OOOOO0O00OOOOO )#line:1018
-            if O000000OO0O0OOOO0 .status_code ==200 :#line:1019
-                print (f"200 message sent: {O00OO000OOO00OO0O}")#line:1020
-            elif O000000OO0O0OOOO0 .status_code ==429 :#line:1021
-                print (f"429 rate limit: {O00OO000OOO00OO0O}")#line:1022
-                O0O0O00OO00OOOOO0 =O000000OO0O0OOOO0 .json ().get ("retry_after",1 )#line:1023
-                time .sleep (O0O0O00OO00OOOOO0 )#line:1024
-            elif O000000OO0O0OOOO0 .status_code ==401 :#line:1025
-                print (f"401 unknown token: {O00OO000OOO00OO0O}")#line:1026
-            else :#line:1027
-                print (f"error: {O00OO000OOO00OO0O}")#line:1028
-        OOO0O00OOOOOOO000 =(OOO0O00OOOOOOO000 +1 )%len (O000OO0O00O00O0OO )#line:1030
-        time .sleep (1 )#line:1031
-import requests #line:1035
-import base64 #line:1036
-import colorama #line:1037
-import time #line:1038
-def add_emojis_from_files ():#line:1040
-    try :#line:1041
-        with open ("emojiname.txt")as OO0O0OO00OO0000O0 ,open ("emojiurl.txt")as OO0OO000OOO0O0O00 :#line:1042
-            O0000O0OOOOO000O0 =[O0O0OO00OOO0O00OO .strip ()for O0O0OO00OOO0O00OO in OO0O0OO00OO0000O0 .read ().split (',')if O0O0OO00OOO0O00OO .strip ()]#line:1043
-            O0O00O0OO0OO0O000 =[OOOO0O0O00OOO0O0O .strip ()for OOOO0O0O00OOO0O0O in OO0OO000OOO0O0O00 .read ().split (',')if OOOO0O0O00OOO0O0O .strip ()]#line:1044
-    except FileNotFoundError as OOOOO0O0OO0OOO00O :#line:1045
-        print (f"{colorama.Fore.RED}    [!] Error: {str(OOOOO0O0OO0OOO00O)}{colorama.Fore.RESET}")#line:1046
-        return #line:1047
-    if len (O0000O0OOOOO000O0 )!=len (O0O00O0OO0OO0O000 ):#line:1049
-        print (f"{colorama.Fore.RED}    [!] Error: The number of emoji names and URLs do not match!{colorama.Fore.RESET}")#line:1050
-        return #line:1051
-    try :#line:1053
-        with open ("token.txt")as OO0O00OO0O0O00000 :#line:1054
-            O00OO0000O0O0O00O =[O0O00O0O00OO0O0O0 .strip ()for O0O00O0O00OO0O0O0 in OO0O00OO0O0O00000 .readlines ()if O0O00O0O00OO0O0O0 .strip ()]#line:1055
-    except FileNotFoundError as OOOOO0O0OO0OOO00O :#line:1056
-        print (f"{colorama.Fore.RED}    [!] Error: {str(OOOOO0O0OO0OOO00O)}{colorama.Fore.RESET}")#line:1057
-        return #line:1058
-    O0O00O00O000OOOO0 =input ("Enter the Guild ID: ").strip ()#line:1060
-    OOO00O00OO000O0OO =input ("Enter the rate limit between requests (in seconds): ").strip ()#line:1061
-    try :#line:1063
-        OOO00O00OO000O0OO =float (OOO00O00OO000O0OO )#line:1064
-        if OOO00O00OO000O0OO <0 :#line:1065
-            raise ValueError #line:1066
-    except ValueError :#line:1067
-        print (f"{colorama.Fore.RED}    [!] Invalid rate limit. Using default rate limit of 5 seconds.{colorama.Fore.RESET}")#line:1068
-        OOO00O00OO000O0OO =5.0 #line:1069
-    O0O00OOO0O00OO0O0 =set ()#line:1071
-    for OO0OOOO0OO00OOO00 in O00OO0000O0O0O00O :#line:1073
-        OOOO000O0O00O000O ={'Authorization':OO0OOOO0OO00OOO00 ,'Content-Type':'application/json'}#line:1077
-        OOO0O0OO00O0O0OO0 =requests .get (f"https://discord.com/api/v9/guilds/{O0O00O00O000OOOO0}/emojis",headers =OOOO000O0O00O000O )#line:1080
-        if OOO0O0OO00O0O0OO0 .status_code ==200 :#line:1081
-            OOO0000OO0O00O0OO =OOO0O0OO00O0O0OO0 .json ()#line:1082
-            for O0O0000OO0OOO0O0O in OOO0000OO0O00O0OO :#line:1083
-                O0O00OOO0O00OO0O0 .add (O0O0000OO0OOO0O0O ['name'])#line:1084
-        else :#line:1085
-            print (f"{colorama.Fore.RED}    [!] Error fetching existing emojis: {OOO0O0OO00O0O0OO0.status_code} - {OOO0O0OO00O0O0OO0.text}{colorama.Fore.RESET}")#line:1086
-            continue #line:1087
-    for O0O00OOO00OOO000O ,O000OO00O00O0OOOO in zip (O0000O0OOOOO000O0 ,O0O00O0OO0OO0O000 ):#line:1089
-        if O0O00OOO00OOO000O in O0O00OOO0O00OO0O0 :#line:1090
-            print (f"{colorama.Fore.YELLOW}    [*] Emoji '{O0O00OOO00OOO000O}' already exists. Skipping...{colorama.Fore.RESET}")#line:1091
-            continue #line:1092
-        for OO0OOOO0OO00OOO00 in O00OO0000O0O0O00O :#line:1094
-            try :#line:1095
-                OOO0O0OO00O0O0OO0 =requests .get (O000OO00O00O0OOOO )#line:1096
-                OOO0O0OO00O0O0OO0 .raise_for_status ()#line:1097
-                O0OOO00OOOOO0O0O0 =OOO0O0OO00O0O0OO0 .content #line:1098
-                OOO0O000OO0O00O0O =base64 .b64encode (O0OOO00OOOOO0O0O0 ).decode ('utf-8')#line:1099
-                O0OO0000O0O0O000O ={'name':O0O00OOO00OOO000O ,'image':f"data:image/png;base64,{OOO0O000OO0O00O0O}"}#line:1104
-                OOOO000O0O00O000O ={'Authorization':OO0OOOO0OO00OOO00 ,'Content-Type':'application/json'}#line:1109
-                O000OO0O0OOO0OO0O =requests .post (f"https://discord.com/api/v9/guilds/{O0O00O00O000OOOO0}/emojis",headers =OOOO000O0O00O000O ,json =O0OO0000O0O0O000O )#line:1111
-                if O000OO0O0OOO0OO0O .status_code ==201 :#line:1112
-                    print (f"{colorama.Fore.GREEN}    [+] Successfully added emoji '{O0O00OOO00OOO000O}' with token {OO0OOOO0OO00OOO00}{colorama.Fore.RESET}")#line:1113
-                    O0O00OOO0O00OO0O0 .add (O0O00OOO00OOO000O )#line:1114
-                    break #line:1115
-                else :#line:1116
-                    print (f"{colorama.Fore.RED}    [!] Failed to add emoji '{O0O00OOO00OOO000O}' with token {OO0OOOO0OO00OOO00}: {O000OO0O0OOO0OO0O.status_code} - {O000OO0O0OOO0OO0O.text}{colorama.Fore.RESET}")#line:1117
-                time .sleep (OOO00O00OO000O0OO )#line:1119
-            except Exception as OOOOO0O0OO0OOO00O :#line:1120
-                print (f"{colorama.Fore.RED}    [!] Error adding emoji '{O0O00OOO00OOO000O}' with token {OO0OOOO0OO00OOO00}: {str(OOOOO0O0OO0OOO00O)}{colorama.Fore.RESET}")#line:1121
-def main ():#line:1123
-    colorama .init ()#line:1124
-    while True :#line:1125
-        logo ()#line:1126
-        O0OOO0O0OO0O00OO0 =input (f"{colorama.Fore.LIGHTMAGENTA_EX}    [Final] Select an option from above: ")#line:1127
-        if O0OOO0O0OO0O00OO0 =="0":#line:1129
-            update_group_ids ()#line:1130
-        elif O0OOO0O0OO0O00OO0 =="1":#line:1131
-            join_discord_invite ()#line:1132
-        elif O0OOO0O0OO0O00OO0 =="2":#line:1133
-            reaction_spammer ()#line:1134
-        elif O0OOO0O0OO0O00OO0 =="3":#line:1135
-            send_messages_with_mentions ()#line:1136
-        elif O0OOO0O0OO0O00OO0 =="4":#line:1137
-            spammer_menu ()#line:1138
-        elif O0OOO0O0OO0O00OO0 =="5":#line:1139
-            nickchanger ()#line:1140
-        elif O0OOO0O0OO0O00OO0 =="6":#line:1141
-            add_emojis_from_files ()#line:1142
-        elif O0OOO0O0OO0O00OO0 =="7":#line:1143
-            reaction_art ()#line:1144
-        elif O0OOO0O0OO0O00OO0 =="0":#line:1145
-            print (f"{colorama.Fore.LIGHTGREEN_EX}    [*] Exiting the application. Goodbye!{colorama.Fore.RESET}")#line:1146
-            break #line:1147
-        else :#line:1148
-            print (f"{colorama.Fore.RED}    [!] Invalid option selected!{colorama.Fore.RESET}")#line:1149
-        input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:1151
-if __name__ =="__main__":#line:1153
-    main ()#line:1154
+    """)#line:54
+def get_session (proxy =None ):#line:57
+    OO00O00OOO00OOOO0 =requests .Session ()#line:58
+    if proxy :#line:59
+        OO00O00OOO00OOOO0 .proxies ={"http":proxy ,"https":proxy }#line:60
+    return OO00O00OOO00OOOO0 #line:61
+def get_headers (O00OOO000O0O00OO0 ):#line:63
+    return {"Authorization":O00OOO000O0O00OO0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:68
+def send_message_with_mention (O0O00000O0OOO000O ,OOOO0O00000O000OO ,OOOO0OOO00O000OOO ,O000OOO0O0O0O0OO0 ):#line:71
+    O0O00O0000000OOOO =get_session ()#line:72
+    OOO0O0000O00O0000 =get_headers (O0O00000O0OOO000O )#line:73
+    if O000OOO0O0O0O0OO0 :#line:75
+        OO00OOO00O0OOOO00 =random .choice (O000OOO0O0O0O0OO0 )#line:76
+        OOOO0OOO00O000OOO +=f" <@{OO00OOO00O0OOOO00}>"#line:77
+    O00O0OOOOOOO0OOOO =O0O00O0000000OOOO .post (f"https://discord.com/api/v9/channels/{OOOO0O00000O000OO}/messages",headers =OOO0O0000O00O0000 ,json ={"content":OOOO0OOO00O000OOO })#line:83
+    if O00O0OOOOOOO0OOOO .status_code in [200 ,201 ]:#line:84
+        print (f"[+] Message sent to channel {OOOO0O00000O000OO}")#line:85
+    elif O00O0OOOOOOO0OOOO .status_code ==429 :#line:86
+        print ("[-] Rate limited. Please wait before retrying.")#line:87
+        O000OO0O00000O0O0 =O00O0OOOOOOO0OOOO .json ().get ("retry_after",1 )#line:88
+        time .sleep (O000OO0O00000O0O0 )#line:89
+    else :#line:90
+        print (f"[!] Error occurred: {O00O0OOOOOOO0OOOO.status_code}")#line:91
+def fetch_messages (OO0O00000O0000OO0 ,OOOO0000000OO00OO ,limit =100 ):#line:94
+    O0OO000O0O0O0O0O0 ={"Authorization":OO0O00000O0000OO0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:99
+    O0OOOOO0OO00OOOOO =requests .get (f"https://discord.com/api/v9/channels/{OOOO0000000OO00OO}/messages?limit={limit}",headers =O0OO000O0O0O0O0O0 )#line:103
+    if O0OOOOO0OO00OOOOO .status_code ==200 :#line:104
+        return O0OOOOO0OO00OOOOO .json ()#line:105
+    else :#line:106
+        print (f"[!] Failed to fetch messages. HTTP Status Code: {O0OOOOO0OO00OOOOO.status_code}")#line:107
+        return []#line:108
+import concurrent .futures #line:110
+def reaction_spammer ():#line:112
+    try :#line:113
+        with open ("token.txt")as O0OOO0000OOO0000O :#line:114
+            OO0O0O0O00000O0O0 =[O00O0OOOOOOO0O000 .strip ()for O00O0OOOOOOO0O000 in O0OOO0000OOO0000O .readlines ()if O00O0OOOOOOO0O000 .strip ()]#line:115
+    except (FileNotFoundError ,KeyError ):#line:116
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:117
+        return #line:118
+    O0O0O0O0OO0000OO0 =input ("Server ID?: ").strip ()#line:120
+    OO0OOOOOOO0000OO0 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:122
+    if OO0OOOOOOO0000OO0 =='2':#line:123
+        O000O00OO0000OO00 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:124
+        O000OOOOOOOO0000O =[OOOOOOOO0OOOO0000 .strip ()for OOOOOOOO0OOOO0000 in O000O00OO0000OO00 if OOOOOOOO0OOOO0000 .strip ()]#line:125
+    else :#line:126
+        O000OOOOOOOO0000O =[]#line:127
+        for OOOO0OO0O0OO0O0O0 in OO0O0O0O00000O0O0 :#line:128
+            try :#line:129
+                O000OOOOOOOO0000O .extend (fetch_channels (OOOO0OO0O0OO0O0O0 ,O0O0O0O0OO0000OO0 ))#line:130
+            except Exception as O000O00OOO0000000 :#line:131
+                print (f"[!] Failed to fetch channels for token. Error: {O000O00OOO0000000}")#line:132
+                continue #line:133
+    O0OOO0000OO000000 =input ("Select your emoji (a, b, c, ... or custom emojis): ").strip ()#line:135
+    O0O00000000OOOOO0 =input ("Delay between reactions (in seconds)?: ").strip ()#line:136
+    try :#line:138
+        O0O00000000OOOOO0 =float (O0O00000000OOOOO0 )#line:139
+        if O0O00000000OOOOO0 <0 :#line:140
+            raise ValueError #line:141
+    except ValueError :#line:142
+        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:143
+        O0O00000000OOOOO0 =1.0 #line:144
+    OO0OOO00O0OOOOOOO =[]#line:146
+    for O00O0000000OOOO0O in O0OOO0000OO000000 .split (","):#line:147
+        O00O0000000OOOO0O =O00O0000000OOOO0O .strip ().lower ()#line:148
+        if O00O0000000OOOO0O in alphabet_to_flag :#line:149
+            OO0OOO00O0OOOOOOO .append (alphabet_to_flag [O00O0000000OOOO0O ])#line:150
+        else :#line:151
+            OO0OOO00O0OOOOOOO .append (O00O0000000OOOO0O )#line:152
+    if not OO0OOO00O0OOOOOOO :#line:154
+        print (f"{colorama.Fore.RED}    [!] No valid emojis provided!{colorama.Fore.RESET}")#line:155
+        return #line:156
+    def O00O0O0000000OOOO (O0000O00O0000O0O0 ):#line:158
+        for OO00OO0OOO0O0OOO0 in O000OOOOOOOO0000O :#line:159
+            try :#line:160
+                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {OO00OO0OOO0O0OOO0}...{colorama.Fore.RESET}")#line:161
+                OO00OO0OOOO000000 =fetch_messages (O0000O00O0000O0O0 ,OO00OO0OOO0O0OOO0 ,limit =100 )#line:162
+                if not OO00OO0OOOO000000 :#line:163
+                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:164
+                    continue #line:165
+                for OO0O00O000OOO00OO in OO00OO0OOOO000000 :#line:167
+                    for O0O0OOOO0OO0O00O0 in OO0OOO00O0OOOOOOO :#line:168
+                        reactionput (O0000O00O0000O0O0 ,OO00OO0OOO0O0OOO0 ,OO0O00O000OOO00OO ['id'],O0O0OOOO0OO0O00O0 )#line:169
+                        time .sleep (O0O00000000OOOOO0 )#line:170
+            except Exception as O000OO00000O0O0O0 :#line:171
+                print (f"[!] Error processing channel {OO00OO0OOO0O0OOO0}. Error: {O000OO00000O0O0O0}")#line:172
+                continue #line:173
+    with concurrent .futures .ThreadPoolExecutor ()as OO0OO00O00O000O0O :#line:175
+        O0OOO0000O0O000O0 =[OO0OO00O00O000O0O .submit (O00O0O0000000OOOO ,OO0OO0OOOOO0OO000 )for OO0OO0OOOOO0OO000 in OO0O0O0O00000O0O0 ]#line:176
+        concurrent .futures .wait (O0OOO0000O0O000O0 )#line:177
+import requests #line:180
+import json #line:181
+import time #line:182
+import colorama #line:183
+alphabet_to_flag ={'a':'🇦','b':'🇧','c':'🇨','d':'🇩','e':'🇪','f':'🇫','g':'🇬','h':'🇭','i':'🇮','j':'🇯','k':'🇰','l':'🇱','m':'🇲','n':'🇳','o':'🇴','p':'🇵','q':'🇶','r':'🇷','s':'🇸','t':'🇹','u':'🇺','v':'🇻','w':'🇼','x':'🇽','y':'🇾','z':'🇿'}#line:191
+def fetch_channels (OOOO000O0OO00OO00 ,OOO00O00OOOO0O0OO ):#line:193
+    OO000OOO00OO0O00O =f"https://discord.com/api/v9/guilds/{OOO00O00OOOO0O0OO}/channels"#line:194
+    O0OO0OOOOO000O0OO ={"Authorization":OOOO000O0OO00OO00 }#line:195
+    OO0O0O00O0O0O000O =requests .get (OO000OOO00OO0O00O ,headers =O0OO0OOOOO000O0OO )#line:196
+    if OO0O0O00O0O0O000O .status_code ==200 :#line:197
+        return [O0O000O0000O0O00O ['id']for O0O000O0000O0O00O in OO0O0O00O0O0O000O .json ()if O0O000O0000O0O00O ['type']==0 ]#line:198
+    else :#line:199
+        raise Exception (f"Failed to fetch channels: {OO0O0O00O0O0O000O.status_code} - {OO0O0O00O0O0O000O.text}")#line:200
+def fetch_messages (OOO00OO00OO000O00 ,OOOOOOOO0O0O0000O ,limit =100 ):#line:202
+    O000OO00OO000O0OO =f"https://discord.com/api/v9/channels/{OOOOOOOO0O0O0000O}/messages?limit={limit}"#line:203
+    OOO0O0OO0O000000O ={"Authorization":OOO00OO00OO000O00 }#line:204
+    O0OO00O0O0O000O00 =requests .get (O000OO00OO000O0OO ,headers =OOO0O0OO0O000000O )#line:205
+    if O0OO00O0O0O000O00 .status_code ==200 :#line:206
+        return O0OO00O0O0O000O00 .json ()#line:207
+    else :#line:208
+        print (f"[!] Failed to fetch messages: {O0OO00O0O0O000O00.status_code} - {O0OO00O0O0O000O00.text}")#line:209
+        return []#line:210
+def reactionput (O0OO0000O0OOOOO00 ,O000000OOO0OOO0OO ,O000OOOO0OO0OO00O ,O00O0000OO000OOO0 ):#line:212
+    O0000OOOO0OOOO0O0 =f"https://discord.com/api/v9/channels/{O000000OOO0OOO0OO}/messages/{O000OOOO0OO0OO00O}/reactions/{O00O0000OO000OOO0}/@me"#line:213
+    OO000OO0OO0O000OO ={"Authorization":O0OO0000O0OOOOO00 ,"Content-Type":"application/json"}#line:214
+    O0O0O00OO00OOO0O0 =requests .put (O0000OOOO0OOOO0O0 ,headers =OO000OO0OO0O000OO )#line:215
+    if O0O0O00OO00OOO0O0 .status_code not in [204 ,200 ]:#line:216
+        print (f"{colorama.Fore.RED}    [!] Failed to add reaction: {O0O0O00OO00OOO0O0.status_code} - {O0O0O00OO00OOO0O0.text}{colorama.Fore.RESET}")#line:217
+import random #line:219
+def reaction_art ():#line:221
+    try :#line:222
+        with open ("token.txt",encoding ="utf-8")as O0O0OO0O00OO00OO0 :#line:223
+            OO0000O00O0O0O0OO =[O00OOO0000000O00O .strip ()for O00OOO0000000O00O in O0O0OO0O00OO00OO0 .readlines ()if O00OOO0000000O00O .strip ()]#line:224
+    except (FileNotFoundError ,KeyError ):#line:225
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:226
+        return #line:227
+    OO00O0O00OO00O00O =input ("Server ID?: ").strip ()#line:229
+    OOOO00O00OOOO0O00 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:231
+    if OOOO00O00OOOO0O00 =='2':#line:232
+        O0000OOO0O00O0O00 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:233
+        OO0OOO00OO000OO00 =[OOO00O00OOOOOOOO0 .strip ()for OOO00O00OOOOOOOO0 in O0000OOO0O00O0O00 if OOO00O00OOOOOOOO0 .strip ()]#line:234
+    else :#line:235
+        OO0OOO00OO000OO00 =[]#line:236
+        for OOO0OOOO0O0OO000O in OO0000O00O0O0O0OO :#line:237
+            try :#line:238
+                OO0OOO00OO000OO00 .extend (fetch_channels (OOO0OOOO0O0OO000O ,OO00O0O00OO00O00O ))#line:239
+            except Exception as O0O00OOOOOO0OOOOO :#line:240
+                print (f"[!] Failed to fetch channels for token. Error: {O0O00OOOOOO0OOOOO}")#line:241
+                continue #line:242
+        random .shuffle (OO0OOO00OO000OO00 )#line:243
+    O00OOOO000OO0OO0O =input ("Delay between reactions (in seconds)?: ").strip ()#line:245
+    try :#line:247
+        O00OOOO000OO0OO0O =float (O00OOOO000OO0OO0O )#line:248
+        if O00OOOO000OO0OO0O <0 :#line:249
+            raise ValueError #line:250
+    except ValueError :#line:251
+        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:252
+        O00OOOO000OO0OO0O =1.0 #line:253
+    try :#line:255
+        with open ("art.txt",encoding ="utf-8")as OO0OO0O0O000OO0OO :#line:256
+            OOO00OOO00O0O0000 =[O0OOO000OOOO0O00O .strip ()for O0OOO000OOOO0O00O in OO0OO0O0O000OO0OO .readlines ()if O0OOO000OOOO0O00O .strip ()]#line:257
+    except (FileNotFoundError ,KeyError ):#line:258
+        print (f"{colorama.Fore.RED}    [!] Error: art.txt file not found or empty!{colorama.Fore.RESET}")#line:259
+        return #line:260
+    except UnicodeDecodeError as O0O00OOOOOO0OOOOO :#line:261
+        print (f"{colorama.Fore.RED}    [!] Error decoding art.txt: {str(O0O00OOOOOO0OOOOO)}{colorama.Fore.RESET}")#line:262
+        return #line:263
+    if not OOO00OOO00O0O0000 :#line:265
+        print (f"{colorama.Fore.RED}    [!] No valid art provided in art.txt!{colorama.Fore.RESET}")#line:266
+        return #line:267
+    OOO00OOO00O0O0000 .reverse ()#line:270
+    for OOO0OOOO0O0OO000O in OO0000O00O0O0O0OO :#line:272
+        for OOO0OOOO000O0O0OO in OO0OOO00OO000OO00 :#line:273
+            try :#line:274
+                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {OOO0OOOO000O0O0OO}...{colorama.Fore.RESET}")#line:275
+                O000O00O0OOO0OOOO =fetch_messages (OOO0OOOO0O0OO000O ,OOO0OOOO000O0O0OO ,limit =100 )#line:278
+                if not O000O00O0OOO0OOOO :#line:279
+                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:280
+                    continue #line:281
+                for O0O000OOOO0O000OO ,OO000OO00O0OOO000 in enumerate (O000O00O0OOO0OOOO ):#line:284
+                    O0O0OO0OO00O0O0OO =OOO00OOO00O0O0000 [O0O000OOOO0O000OO %len (OOO00OOO00O0O0000 )].split (',')#line:285
+                    for O0OO00OOOOO000O0O in O0O0OO0OO00O0O0OO :#line:286
+                        reactionput (OOO0OOOO0O0OO000O ,OOO0OOOO000O0O0OO ,OO000OO00O0OOO000 ['id'],O0OO00OOOOO000O0O .strip ())#line:287
+                        print (f"Adding reaction '{O0OO00OOOOO000O0O.strip()}' to message {OO000OO00O0OOO000['id']} in channel {OOO0OOOO000O0O0OO}")#line:288
+                        time .sleep (O00OOOO000OO0OO0O )#line:289
+            except Exception as O0O00OOOOOO0OOOOO :#line:290
+                print (f"[!] Error processing channel {OOO0OOOO000O0O0OO}. Error: {O0O00OOOOOO0OOOOO}")#line:291
+                continue #line:292
+    def O0000OO00OOOOO0OO (O00OO00OO00OOOO00 ):#line:297
+        for OO0O0O0O0O000O00O in OO0OOO00OO000OO00 :#line:298
+            try :#line:299
+                print (f"{colorama.Fore.LIGHTCYAN_EX}Processing channel {OO0O0O0O0O000O00O}...{colorama.Fore.RESET}")#line:300
+                OOO0O0OO0O000OO00 =fetch_messages (O00OO00OO00OOOO00 ,OO0O0O0O0O000O00O ,limit =100 )#line:301
+                if not OOO0O0OO0O000OO00 :#line:302
+                    print (f"{colorama.Fore.RED}    [!] No messages found in the channel or an error occurred.{colorama.Fore.RESET}")#line:303
+                    continue #line:304
+                for O0000000OOO0O00O0 in OOO0O0OO0O000OO00 :#line:306
+                    for O00O0OOO00OOO0O00 in O0O0OO0OO00O0O0OO :#line:307
+                        reactionput (O00OO00OO00OOOO00 ,OO0O0O0O0O000O00O ,O0000000OOO0O00O0 ['id'],O00O0OOO00OOO0O00 )#line:308
+                        time .sleep (O00OOOO000OO0OO0O )#line:309
+            except Exception as OO0000O0O000O000O :#line:310
+                print (f"[!] Error processing channel {OO0O0O0O0O000O00O}. Error: {OO0000O0O000O000O}")#line:311
+                continue #line:312
+    with concurrent .futures .ThreadPoolExecutor ()as O0000OO000O00O00O :#line:314
+        OOO000O000O0O000O =[O0000OO000O00O00O .submit (O0000OO00OOOOO0OO ,O0000O0O000000000 )for O0000O0O000000000 in OO0000O00O0O0O0OO ]#line:315
+        concurrent .futures .wait (OOO000O000O0O000O )#line:316
+def update_group_ids ():#line:319
+    try :#line:320
+        with open ("token.txt")as O000OOOOOO000O0O0 :#line:321
+            OO000O0O0OO0O00OO =[OOOOOO000OO000000 .strip ()for OOOOOO000OO000000 in O000OOOOOO000O0O0 .readlines ()if OOOOOO000OO000000 .strip ()]#line:322
+        O0O0OOOO0O00O0OO0 =OO000O0O0OO0O00OO [0 ]#line:323
+    except (FileNotFoundError ,KeyError ):#line:324
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:325
+        return #line:326
+    O0OOO00OOO0OO00OO ={"Authorization":O0O0OOOO0O00O0OO0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:332
+    OOO0000000000O0OO =requests .get ('https://discord.com/api/v9/users/@me/channels',headers =O0OOO00OOO0OO00OO )#line:334
+    if OOO0000000000O0OO .status_code ==200 :#line:335
+        OOO0OOO0OOO0000O0 =OOO0000000000O0OO .json ()#line:336
+        with open ("group_id.txt","w")as O0O00OOOO0O0O000O :#line:337
+            for OOO000OO00O00O000 in OOO0OOO0OOO0000O0 :#line:338
+                if OOO000OO00O00O000 ['type']==3 :#line:339
+                    O0O00OOOO0O0O000O .write (OOO000OO00O00O000 ['id']+'\n')#line:340
+        print (f"{colorama.Fore.LIGHTGREEN_EX}    [+] Group IDs updated successfully.{colorama.Fore.RESET}")#line:341
+    else :#line:342
+        print (f"{colorama.Fore.LIGHTRED_EX}    [!] Failed to retrieve group IDs. HTTP Status Code: {OOO0000000000O0OO.status_code}{colorama.Fore.RESET}")#line:343
+import requests #line:345
+import requests #line:347
+def fetch_channels (OOO00000OO0O0O0OO ,O0OOOO0O00O00OO0O ):#line:349
+    try :#line:350
+        O0O0O0OOO00000000 =requests .Session ()#line:351
+        OOO00OO00OOO00000 =get_headers (OOO00000OO0O0O0OO )#line:352
+        OO00O0O00OOO0OOO0 =O0O0O0OOO00000000 .get (f"https://discord.com/api/v9/guilds/{O0OOOO0O00O00OO0O}/channels",headers =OOO00OO00OOO00000 ,timeout =10 )#line:359
+        if OO00O0O00OOO0OOO0 .status_code ==200 :#line:362
+            try :#line:363
+                OO000O000O00O0O00 =OO00O0O00OOO0OOO0 .json ()#line:364
+                return [O0000OOO0000O0000 ['id']for O0000OOO0000O0000 in OO000O000O00O0O00 if O0000OOO0000O0000 .get ('type')==0 ]#line:365
+            except ValueError :#line:366
+                print ("[!] Error: Response was not valid JSON.")#line:367
+                return []#line:368
+        elif OO00O0O00OOO0OOO0 .status_code ==401 :#line:369
+            print ("[!] Error: Unauthorized - check your token.")#line:370
+        elif OO00O0O00OOO0OOO0 .status_code ==403 :#line:371
+            print ("[!] Error: Forbidden - you lack permissions.")#line:372
+        elif OO00O0O00OOO0OOO0 .status_code ==404 :#line:373
+            print ("[!] Error: Server not found - check the server ID.")#line:374
+        else :#line:375
+            print (f"[!] Error: Unexpected status code {OO00O0O00OOO0OOO0.status_code}.")#line:376
+        return []#line:379
+    except requests .exceptions .Timeout :#line:381
+        print ("[!] Error: Request timed out. Check your connection or try again later.")#line:382
+        return []#line:383
+    except requests .exceptions .RequestException as O0000OOO00O00O0O0 :#line:384
+        print (f"[!] Error: An error occurred while fetching channels: {O0000OOO00O00O0O0}")#line:385
+        return []#line:386
+def extract_uids_from_messages (OO000OO0O0000OO00 ):#line:392
+    O0O00OO00O00O00O0 =set ()#line:393
+    for O0O0O0OOO000O000O in OO000OO0O0000OO00 :#line:394
+        O0O00OO00O00O00O0 .add (O0O0O0OOO000O000O ['author']['id'])#line:395
+    return list (O0O00OO00O00O00O0 )#line:396
+def send_message_with_mention (O00OO0O0OO0O0OO0O ,OOO00OOOOO00OOO00 ,O00OOO00O0O000000 ,O00O0000O0O0000OO ):#line:398
+    OO0000000OO0OOOO0 =get_session ()#line:399
+    OOO0OO000O0OO0OO0 =get_headers (O00OO0O0OO0O0OO0O )#line:400
+    if O00O0000O0O0000OO :#line:402
+        OOOOO0OO0O0OOOO0O =random .choice (O00O0000O0O0000OO )#line:403
+        O00OOO00O0O000000 +=f" <@{OOOOO0OO0O0OOOO0O}>"#line:404
+    OO000OO00000OOO0O =OO0000000OO0OOOO0 .post (f"https://discord.com/api/v9/channels/{OOO00OOOOO00OOO00}/messages",headers =OOO0OO000O0OO0OO0 ,json ={"content":O00OOO00O0O000000 })#line:410
+    if OO000OO00000OOO0O .status_code in [200 ,201 ]:#line:411
+        print (f"[+] Message sent to channel {OOO00OOOOO00OOO00}")#line:412
+    elif OO000OO00000OOO0O .status_code ==429 :#line:413
+        print ("[-] Rate limited. Please wait before retrying.")#line:414
+        OOO00OOOOO00OO0O0 =OO000OO00000OOO0O .json ().get ("retry_after",1 )#line:415
+        time .sleep (OOO00OOOOO00OO0O0 )#line:416
+    else :#line:417
+        print (f"[!] Error occurred: {OO000OO00000OOO0O.status_code}")#line:418
+def send_messages_with_mentions ():#line:419
+    try :#line:420
+        with open ("token.txt")as O00OO00O000OOO0O0 :#line:421
+            OOO0O0O0OOO0OO0O0 =[O0OO00OOO0OOO00O0 .strip ()for O0OO00OOO0OOO00O0 in O00OO00O000OOO0O0 .readlines ()if O0OO00OOO0OOO00O0 .strip ()]#line:422
+    except (FileNotFoundError ,KeyError ):#line:423
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:424
+        return #line:425
+    OOO00OO00O0OOO0O0 =input ("Server ID?: ").strip ()#line:427
+    O000O0OO0O0O0O0OO =input ("Delay between messages (in seconds)?: ").strip ()#line:428
+    O0OOOO0OO0O000000 =input ("Number of messages to send?: ").strip ()#line:429
+    OOO0OO0OOOO0O0000 =input ("Message content?: ").strip ()#line:430
+    O00OO000O0OO00OOO =input ("Blacklist User IDs (comma-separated)?: ").strip ().split (',')#line:431
+    O00OO000O0OO00OOO =[OOO0000OO000O00O0 .strip ()for OOO0000OO000O00O0 in O00OO000O0OO00OOO if OOO0000OO000O00O0 .strip ()]#line:432
+    try :#line:434
+        O000O0OO0O0O0O0OO =float (O000O0OO0O0O0O0OO )#line:435
+        if O000O0OO0O0O0O0OO <0 :#line:436
+            raise ValueError #line:437
+    except ValueError :#line:438
+        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:439
+        O000O0OO0O0O0O0OO =1.0 #line:440
+    try :#line:442
+        O0OOOO0OO0O000000 =int (O0OOOO0OO0O000000 )#line:443
+        if O0OOOO0OO0O000000 <=0 :#line:444
+            raise ValueError #line:445
+    except ValueError :#line:446
+        print (f"{colorama.Fore.RED}    [!] Invalid send count. Using default count of 1.{colorama.Fore.RESET}")#line:447
+        O0OOOO0OO0O000000 =1 #line:448
+    O0O0OOOO0000000O0 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:450
+    if O0O0OOOO0000000O0 =='2':#line:451
+        O0O0OOOO0O00OOO00 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:452
+        O0O0OOOO0O00OOO00 =[OO0O0OOOOO00O0OO0 .strip ()for OO0O0OOOOO00O0OO0 in O0O0OOOO0O00OOO00 if OO0O0OOOOO00O0OO0 .strip ()]#line:453
+    else :#line:454
+        O0O0OOOO0O00OOO00 =[]#line:455
+    OOOOO0O0O00OOOOOO =set ()#line:457
+    for O00OO0O00O00000O0 in OOO0O0O0OOO0OO0O0 :#line:458
+        OO000O000OOO0O0OO =fetch_channels (O00OO0O00O00000O0 ,OOO00OO00O0OOO0O0 )#line:459
+        for O00OOOO0O00O00O0O in OO000O000OOO0O0OO :#line:460
+            O0OOO0OO00O000O00 =fetch_messages (O00OO0O00O00000O0 ,O00OOOO0O00O00O0O ,limit =100 )#line:461
+            OO000OO00OO0OOOOO =extract_uids_from_messages (O0OOO0OO00O000O00 )#line:462
+            OOOOO0O0O00OOOOOO .update (OO000OO00OO0OOOOO )#line:463
+    OOOOO0O0O00OOOOOO =list (set (OOOOO0O0O00OOOOOO )-set (O00OO000O0OO00OOO ))#line:466
+    for _OO0O00O0OOOO0O0OO in range (O0OOOO0OO0O000000 ):#line:468
+        for O00OO0O00O00000O0 in OOO0O0O0OOO0OO0O0 :#line:469
+            if O0O0OOOO0O00OOO00 :#line:470
+                OO000O000OOO0O0OO =O0O0OOOO0O00OOO00 #line:471
+            for O00OOOO0O00O00O0O in OO000O000OOO0O0OO :#line:472
+                send_message_with_mention (O00OO0O00O00000O0 ,O00OOOO0O00O00O0O ,OOO0OO0OOOO0O0000 ,OOOOO0O0O00OOOOOO )#line:473
+                time .sleep (O000O0OO0O0O0O0OO )#line:474
+def join_discord_invite ():#line:479
+    try :#line:480
+        with open ("token.txt")as O00OO0OO0O0O0OOO0 :#line:481
+            OOOOOOOO00OO0O000 =[O0000000O0OOO00OO .strip ()for O0000000O0OOO00OO in O00OO0OO0O0O0OOO0 .readlines ()if O0000000O0OOO00OO .strip ()]#line:482
+    except (FileNotFoundError ,KeyError ):#line:483
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:484
+        return #line:485
+    OOOO00O000000OOO0 =input ("Invite Code?: discord.gg/").strip ()#line:487
+    for OOOOOOOOO00OOO0O0 in OOOOOOOO00OO0O000 :#line:490
+        joiner (OOOOOOOOO00OOO0O0 ,OOOO00O000000OOO0 )#line:491
+import json ,time ,base64 ,random ,requests #line:493
+def cookieset (OOO0OO000O0OO0OOO ):#line:495
+    OOO0OO00O00OO0OO0 =OOO0OO000O0OO0OOO .get ("https://discord.com/app")#line:496
+    return OOO0OO00O00OO0OO0 .cookies .get_dict ()#line:497
+def generatexspandua (O000OOO00OOOO0O0O ):#line:499
+    OO0OO0OO0000O00O0 =["Android","Windows","Macintosh"]#line:500
+    OO0OOOO00000OOO00 =random .choice (OO0OO0OO0000O00O0 )#line:501
+    if OO0OOOO00000OOO00 =="Macintosh":#line:502
+        O00OO0O000000OO0O =f"Intel Mac OS X 10_15_"+str (random .randint (5 ,7 ))#line:503
+        O000OO0OOO0OOO0OO ="Macintosh; Intel Mac OS X "+O00OO0O000000OO0O #line:504
+        OO000OO0OOO00O0O0 ="x86_64"#line:505
+    elif OO0OOOO00000OOO00 =="Windows":#line:506
+        O00OO0O000000OO0O =f'{random.choice([6.0, 10.0, 11.0])}'#line:507
+        O000OO0OOO0OOO0OO ="Windows NT "+O00OO0O000000OO0O +" Win64; x64"#line:508
+        OO000OO0OOO00O0O0 ="x86_64"#line:509
+    else :#line:510
+        O00OO0O000000OO0O ="13"#line:511
+        O000OO0OOO0OOO0OO =f"Linux; Android 13; Pixel 6a"#line:512
+        OO000OO0OOO00O0O0 ="aarch64"#line:513
+    O0OO0O00OOO0OO0OO ={"os":OO0OOOO00000OOO00 ,"browser":"Discord Client","release_channel":"stable","client_version":"1.0.9001","os_version":O00OO0O000000OO0O ,"os_arch":OO000OO0OOO00O0O0 ,"system_locale":"ja-JP","client_build_number":O000OOO00OOOO0O0O ,"client_event_source":None ,"design_id":0 }#line:526
+    OO0OOO0O0OOOOO0OO =f"Mozilla/5.0 ({O000OO0OOO0OOO0OO}) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9001 Chrome/112.0.0.0 Electron/9.3.5 Safari/537.36"#line:527
+    return base64 .b64encode (json .dumps (O0OO0O00OOO0OO0OO ,separators =(',',':')).encode ()).decode (),OO0OOO0O0OOOOO0OO #line:528
+def joiner (OO00OO000OOOOOO00 ,O0O0O00OO0OO0O000 ,O0OO0000O00OO0O00 ,O00OOOO0OO0O0OOO0 ):#line:530
+  O00OOO0OO0OO0O0OO =get_session (O0OO0000O00OO0O00 )#line:531
+  O0O0O000O0O0OO000 =cookieset (O00OOO0OO0OO0O0OO )#line:532
+  O0O0O000O0O0OO000 ["locale"]="ja-JP"#line:533
+  OO00O0OO00O00O0OO =201211 #line:534
+  OOOOO000000000OO0 ,OOOO0O00000OO000O =generatexspandua (OO00O0OO00O00O0OO )#line:535
+  O0OO0OO0O0OO00OOO ={"Authorization":OO00OO000OOOOOO00 ,"accept":"*/*","accept-language":"ja-JP","connection":"keep-alive","DNT":"1","origin":"https://discord.com","sec-fetch-dest":"empty","sec-fetch-mode":"cors","sec-fetch-site":"same-origin","referer":"https://discord.com/channels/@me","TE":"Trailers","user-agent":OOOO0O00000OO000O ,"X-Super-Properties":OOOOO000000000OO0 ,}#line:550
+  O00O00OO0O000OOO0 =O00OOO0OO0OO0O0OO .post ("https://discord.com/api/v9/invites/"+O0O0O00OO0OO0O000 ,headers =O0OO0OO0O0OO00OOO ,json ={},cookies =O0O0O000O0O0OO000 )#line:552
+  if O00O00OO0O000OOO0 .status_code ==200 :#line:553
+    print ("[+] Probably joined "+OO00OO000OOOOOO00 )#line:554
+    if "show_verification_form"in O00O00OO0O000OOO0 .json ():#line:555
+      bypass (OO00OO000OOOOOO00 ,O00O00OO0O000OOO0 .json ()["guild"]["id"],O00OOO0OO0OO0O0OO ,O0OO0OO0O0OO00OOO )#line:556
+    return #line:557
+  elif "captcha_key"in O00O00OO0O000OOO0 .text and O00O00OO0O000OOO0 .status_code ==400 :#line:558
+    print ("[!] Hcaptcha interference "+OO00OO000OOOOOO00 )#line:559
+    return #line:560
+  elif O00O00OO0O000OOO0 .status_code ==401 :#line:561
+    print ("[!] Token is dead "+OO00OO000OOOOOO00 )#line:562
+    return #line:563
+  elif O00O00OO0O000OOO0 .status_code ==403 :#line:564
+    if "message"in O00O00OO0O000OOO0 .json ():#line:565
+      if O00O00OO0O000OOO0 .json ()["message"]=="Unknown Message":#line:566
+        print ("[!] Unknown error "+OO00OO000OOOOOO00 )#line:567
+        return #line:568
+      else :#line:569
+        print ("[!] Verification required "+OO00OO000OOOOOO00 )#line:570
+        return #line:571
+    else :#line:572
+      print ("[!] Error occurred "+OO00OO000OOOOOO00 )#line:573
+      return #line:574
+  elif O00O00OO0O000OOO0 .status_code ==429 :#line:575
+    print ("[!] Token rate-limited "+OO00OO000OOOOOO00 )#line:576
+    return #line:577
+  elif O00O00OO0O000OOO0 .status_code ==400 :#line:578
+    if "captcha_key"in O00O00OO0O000OOO0 .json ():#line:579
+      print ("[!] Hcaptcha interference "+OO00OO000OOOOOO00 )#line:580
+      return #line:581
+    else :#line:582
+      print ("[!] Error occurred "+OO00OO000OOOOOO00 )#line:583
+      return #line:584
+  elif O00O00OO0O000OOO0 .status_code ==401 :#line:585
+    print ("[!] Token is dead "+OO00OO000OOOOOO00 )#line:586
+    return #line:587
+  elif O00O00OO0O000OOO0 .status_code ==403 :#line:588
+    if "message"in O00O00OO0O000OOO0 .json ():#line:589
+      if O00O00OO0O000OOO0 .json ()["message"]=="Unknown Message":#line:590
+        print ("[!] Unknown error "+OO00OO000OOOOOO00 )#line:591
+        return #line:592
+      else :#line:593
+        print ("[!] Verification required "+OO00OO000OOOOOO00 )#line:594
+        return #line:595
+    else :#line:596
+      print ("[!] Error occurred "+OO00OO000OOOOOO00 )#line:597
+  elif O00O00OO0O000OOO0 .status_code ==429 :#line:598
+    print ("[!] Token rate-limited "+OO00OO000OOOOOO00 )#line:599
+    return #line:600
+  else :#line:601
+    print ("[!] Error occurred "+OO00OO000OOOOOO00 )#line:602
+    return #line:603
+def update_group_ids ():#line:606
+    OO0OO00OO0OO0O000 =input ("Invite Code?: ").strip ()#line:607
+    try :#line:608
+        with open ("token.txt")as OO0O0000OOOO00OOO :#line:609
+            O0O0OOOO0OOO0OO0O =[OOOO0O0O00O000000 .strip ()for OOOO0O0O00O000000 in OO0O0000OOOO00OOO .readlines ()if OOOO0O0O00O000000 .strip ()]#line:610
+    except (FileNotFoundError ,KeyError ):#line:611
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:612
+        return #line:613
+    OOOOO00000O00OO0O =requests .Session ()#line:615
+    for O0000O0OO000000O0 in O0O0OOOO0OOO0OO0O :#line:616
+        joiner (O0000O0OO000000O0 ,OO0OO00OO0OO0O000 ,OOOOO00000O00OO0O )#line:617
+        time .sleep (2 )#line:618
+    input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:620
+def bypass (OO0OOO00000OO0OOO ,OO00OO0000O0O0000 ,O00O00O0OO0OOOOOO ,O00O0O000O00OOOOO ):#line:623
+    try :#line:624
+        OO0OOOO0O0OO0O00O =O00O00O0OO0OOOOOO .get (f"https://discord.com/api/v9/guilds/{OO00OO0000O0O0000}/member-verification?with_guild=false",headers =O00O0O000O00OOOOO ).json ()#line:625
+        O00OOOOO0000O0O00 =O00O00O0OO0OOOOOO .put (f"https://discord.com/api/v9/guilds/{OO00OO0000O0O0000}/requests/@me",headers =O00O0O000O00OOOOO ,json =OO0OOOO0O0OO0O00O )#line:626
+        if O00OOOOO0000O0O00 .status_code ==201 :#line:627
+            print (f"[+] MemberscreeningBypassed {OO0OOO00000OO0OOO}")#line:628
+            return #line:629
+        else :#line:630
+            print (f"[!] Bypassが出来ませんでした {OO0OOO00000OO0OOO}")#line:631
+            return #line:632
+    except Exception as OO0O0000OO00O000O :#line:633
+        print (f"[!] エラーが発生しました。{OO0O0000OO00O000O}")#line:634
+session =requests .Session ()#line:636
+def reactionput (OO0000OOOO0O0O00O ,OOOOOOO0OOO0O0OO0 ,OOO00OOOO0000OO00 ,OO0OOOOO0000OOOO0 ,proxy =None ):#line:639
+    O00O0OO0O00OOOO0O =get_session (proxy )#line:640
+    O0OOOO00OO000O00O =get_headers (O00O0OO0O00OOOO0O )#line:641
+    O0OOOO00OO000O00O ["Authorization"]=OO0000OOOO0O0O00O #line:642
+    OO0OOOOO0000OOOO0 =requests .utils .quote (OO0OOOOO0000OOOO0 )#line:644
+    OO00OO0OOOO000OOO =O00O0OO0O00OOOO0O .put (f"https://discord.com/api/v9/channels/{OOOOOOO0OOO0O0OO0}/messages/{OOO00OOOO0000OO00}/reactions/{OO0OOOOO0000OOOO0}/%40me?location=Message&type=0",headers =O0OOOO00OO000O00O )#line:648
+    if OO00OO0OOOO000OOO .status_code in [200 ,204 ]:#line:649
+        print (f"[+] Reaction '{OO0OOOOO0000OOOO0}' added successfully to message {OOO00OOOO0000OO00}")#line:650
+    elif OO00OO0OOOO000OOO .status_code ==429 :#line:651
+        print ("[-] Rate limited. Please wait before retrying.")#line:652
+        OOOOO0OO00000O0O0 =OO00OO0OOOO000OOO .json ().get ("retry_after",1 )#line:653
+        time .sleep (OOOOO0OO00000O0O0 )#line:654
+    elif OO00OO0OOOO000OOO .status_code ==401 :#line:655
+        print ("[-] Invalid or expired token.")#line:656
+    else :#line:657
+        print (f"[!] Error occurred: {OO00OO0OOOO000OOO.status_code}")#line:658
+def generatexspandua (OO0O0O0O0O0O00000 ):#line:661
+  O00OOO00OO000O00O =["Android","Windows","Macintosh"]#line:662
+  O00O0OOO0000O0000 =random .choice (O00OOO00OO000O00O )#line:663
+  if O00O0OOO0000O0000 =="Macintosh":#line:664
+    O0OO00000OO00OOO0 =f"Intel Mac OS X 10_15_"+str (random .randint (5 ,7 ))#line:665
+    OO00OOOO0O00O0O00 ="Macintosh; Intel Mac OS X "+O0OO00000OO00OOO0 #line:666
+    OOO0O000O00O0O0OO ="x86_64"#line:667
+  if O00O0OOO0000O0000 =="Windows":#line:668
+    O0OO00000OO00OOO0 =f'{random.choice([6.0,10.0,11.0])}'#line:669
+    OO00OOOO0O00O0O00 ="Windows NT "+O0OO00000OO00OOO0 +" Win64; x64"#line:670
+    OOO0O000O00O0O0OO ="x86_64"#line:671
+  if O00O0OOO0000O0000 =="Android":#line:672
+    O0OO00000OO00OOO0 ="13"#line:673
+    OO00OOOO0O00O0O00 =f"Linux; Android 13; Pixel 6a"#line:674
+    OOO0O000O00O0O0OO ="aarch64"#line:675
+  OO00O00O0OO0000OO ={"os":O00O0OOO0000O0000 ,"browser":"Discord Client","release_channel":"stable","client_version":"1.0.9001","os_version":O0OO00000OO00OOO0 ,"os_arch":OOO0O000O00O0O0OO ,"system_locale":"ja-JP","client_build_number":OO0O0O0O0O0O00000 ,"client_event_source":None ,"design_id":0 }#line:676
+  O00O0O0O0OO00OOO0 =f"Mozilla/5.0 ({OO00OOOO0O00O0O00}) AppleWebKit/537.36 (KHTML, like Gecko) discord/1.0.9001 Chrome/112.0.0.0 Electron/9.3.5 Safari/537.36"#line:677
+  return base64 .b64encode (json .dumps (OO00O00O0OO0000OO ,separators =(',',':')).encode ()).decode (),O00O0O0O0OO00OOO0 #line:678
+import base64 #line:680
+def nickchanger ():#line:683
+    try :#line:684
+        with open ("token.txt")as OOO0O0O00OO0O00OO :#line:685
+            OO00000OO0O00OOO0 =[OOOOO000OOOOO000O .strip ()for OOOOO000OOOOO000O in OOO0O0O00OO0O00OO .readlines ()if OOOOO000OOOOO000O .strip ()]#line:686
+    except (FileNotFoundError ,KeyError ):#line:687
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:688
+        return #line:689
+    OO0O0OO0O0OO0O000 =input ("Server ID?: ").strip ()#line:691
+    OOOOOOOOOO0O0O0OO =input ("Nickname?: ").strip ()#line:692
+    OOO0000OO00OOOO0O =input ("Delay (in seconds)?: ").strip ()#line:693
+    try :#line:695
+        OOO0000OO00OOOO0O =float (OOO0000OO00OOOO0O )#line:696
+        if OOO0000OO00OOOO0O <0 :#line:697
+            raise ValueError #line:698
+    except ValueError :#line:699
+        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:700
+        OOO0000OO00OOOO0O =1.0 #line:701
+    for OOOO00OO0O0OO00O0 in OO00000OO0O00OOO0 :#line:703
+        O0OOOOOOOOO0O0O0O ={"Authorization":OOOO00OO0O0OO00O0 ,"accept-language":"de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 OPR/81.0.4196.31"}#line:708
+        O0O0OOOO0O00OO0OO ={"nick":OOOOOOOOOO0O0O0OO }#line:709
+        OO0OO00O000O00O00 =requests .patch (f"https://discord.com/api/v9/guilds/{OO0O0OO0O0OO0O000}/members/@me",headers =O0OOOOOOOOO0O0O0O ,json =O0O0OOOO0O00OO0OO )#line:710
+        if OO0OO00O000O00O00 .status_code ==200 :#line:712
+            print (f"{colorama.Fore.LIGHTGREEN_EX}    [+] Nickname changed to '{OOOOOOOOOO0O0O0OO}' successfully for token {OOOO00OO0O0OO00O0}.{colorama.Fore.RESET}")#line:713
+        elif OO0OO00O000O00O00 .status_code ==429 :#line:714
+            print (f"{colorama.Fore.RED}    [!] Rate limited. Please wait before retrying for token {OOOO00OO0O0OO00O0}.{colorama.Fore.RESET}")#line:715
+            O0O00O0OO0OO0000O =OO0OO00O000O00O00 .json ().get ("retry_after",1 )#line:716
+            time .sleep (O0O00O0OO0OO0000O )#line:717
+        else :#line:718
+            print (f"{colorama.Fore.RED}    [!] Error occurred: {OO0OO00O000O00O00.status_code} for token {OOOO00OO0O0OO00O0}.{colorama.Fore.RESET}")#line:719
+        time .sleep (OOO0000OO00OOOO0O )#line:721
+import json ,websocket ,threading ,tls_client ,random ,time #line:725
+session =tls_client .Session (client_identifier ="chrome112",random_tls_extension_order =True )#line:727
+class Utils :#line:729
+    @staticmethod #line:730
+    def rangeCorrector (OOO0000OOO0OO000O ):#line:731
+        if [0 ,99 ]not in OOO0000OOO0OO000O :#line:732
+            OOO0000OOO0OO000O .insert (0 ,[0 ,99 ])#line:733
+        return OOO0000OOO0OO000O #line:734
+    @staticmethod #line:736
+    def getRanges (O0O000O0OOOO00OOO ,OOO0000000O0OO00O ,O0OO00OOOO000000O ):#line:737
+        OO0O0O0O0000000OO =int (O0O000O0OOOO00OOO *OOO0000000O0OO00O )#line:738
+        O0O0O00O00OOOOOOO =[[OO0O0O0O0000000OO ,OO0O0O0O0000000OO +99 ]]#line:739
+        if O0OO00OOOO000000O >OO0O0O0O0000000OO +99 :#line:740
+            O0O0O00O00OOOOOOO .append ([OO0O0O0O0000000OO +100 ,OO0O0O0O0000000OO +199 ])#line:741
+        return Utils .rangeCorrector (O0O0O00O00OOOOOOO )#line:742
+    @staticmethod #line:744
+    def parseGuildMemberListUpdate (OOOOO00O0000OOO0O ):#line:745
+        O0O0OO0O00O0OO0O0 ={"online_count":OOOOO00O0000OOO0O ["d"]["online_count"],"member_count":OOOOO00O0000OOO0O ["d"]["member_count"],"id":OOOOO00O0000OOO0O ["d"]["id"],"guild_id":OOOOO00O0000OOO0O ["d"]["guild_id"],"hoisted_roles":OOOOO00O0000OOO0O ["d"]["groups"],"types":[],"locations":[],"updates":[],}#line:755
+        for O00OOOOO0O0OO00OO in OOOOO00O0000OOO0O ["d"]["ops"]:#line:757
+            O0O0OO0O00O0OO0O0 ["types"].append (O00OOOOO0O0OO00OO ["op"])#line:758
+            if O00OOOOO0O0OO00OO ["op"]in ("SYNC","INVALIDATE"):#line:759
+                O0O0OO0O00O0OO0O0 ["locations"].append (O00OOOOO0O0OO00OO ["range"])#line:760
+                if O00OOOOO0O0OO00OO ["op"]=="SYNC":#line:761
+                    O0O0OO0O00O0OO0O0 ["updates"].append (O00OOOOO0O0OO00OO ["items"])#line:762
+                else :#line:763
+                    O0O0OO0O00O0OO0O0 ["updates"].append ([])#line:764
+            elif O00OOOOO0O0OO00OO ["op"]in ("INSERT","UPDATE","DELETE"):#line:765
+                O0O0OO0O00O0OO0O0 ["locations"].append (O00OOOOO0O0OO00OO ["index"])#line:766
+                if O00OOOOO0O0OO00OO ["op"]=="DELETE":#line:767
+                    O0O0OO0O00O0OO0O0 ["updates"].append ([])#line:768
+                else :#line:769
+                    O0O0OO0O00O0OO0O0 ["updates"].append (O00OOOOO0O0OO00OO ["item"])#line:770
+        return O0O0OO0O00O0OO0O0 #line:771
+class DiscordSocket (websocket .WebSocketApp ):#line:773
+    def __init__ (OO0000OOO000OO000 ,OOO00OO000OO000OO ,O0000O0OOOO0O0O0O ,O0O000OOOO000000O ):#line:774
+        OO0000OOO000OO000 .token =OOO00OO000OO000OO #line:775
+        OO0000OOO000OO000 .guild_id =O0000O0OOOO0O0O0O #line:776
+        OO0000OOO000OO000 .channel_id =O0O000OOOO000000O #line:777
+        OO0000OOO000OO000 .socket_headers ={"Accept-Encoding":"gzip, deflate, br","Accept-Language":"en-US,en;q=0.9","Cache-Control":"no-cache","Pragma":"no-cache","Sec-WebSocket-Extensions":"permessage-deflate; client_max_window_bits","User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",}#line:785
+        super ().__init__ ("wss://gateway.discord.gg/?encoding=json&v=9",header =OO0000OOO000OO000 .socket_headers ,on_open =lambda OOO00OO0000OO0000 :OO0000OOO000OO000 .sock_open (OOO00OO0000OO0000 ),on_message =lambda OO00OO0000O000000 ,O00OO0OOO00000O00 :OO0000OOO000OO000 .sock_message (OO00OO0000O000000 ,O00OO0OOO00000O00 ),on_close =lambda O0000000OOO000000 ,OO000O0OOOOO000OO ,O00OOO00OO0O00O00 :OO0000OOO000OO000 .sock_close (O0000000OOO000000 ,OO000O0OOOOO000OO ,O00OOO00OO0O00O00 ),)#line:794
+        OO0000OOO000OO000 .endScraping =False #line:796
+        OO0000OOO000OO000 .guilds ={}#line:797
+        OO0000OOO000OO000 .members ={}#line:798
+        OO0000OOO000OO000 .ranges =[[0 ,0 ]]#line:799
+        OO0000OOO000OO000 .lastRange =0 #line:800
+        OO0000OOO000OO000 .packets_recv =0 #line:801
+    def run (OO000O00O000OOOO0 ):#line:803
+        OO000O00O000OOOO0 .run_forever ()#line:804
+        return OO000O00O000OOOO0 .members #line:805
+    def scrapeUsers (OO0OOO0OOO0OOOOOO ):#line:807
+        if not OO0OOO0OOO0OOOOOO .endScraping :#line:808
+            OO0OOO0OOO0OOOOOO .send ('{"op":14,"d":{"guild_id":"'+OO0OOO0OOO0OOOOOO .guild_id +'","typing":true,"activities":true,"threads":true,"channels":{"'+OO0OOO0OOO0OOOOOO .channel_id +'":'+json .dumps (OO0OOO0OOO0OOOOOO .ranges )+"}}}")#line:817
+    def sock_open (O0O00O0OO000O0O0O ,O0OO0OOOO00O00000 ):#line:819
+        O0O00O0OO000O0O0O .send ('{"op":2,"d":{"token":"'+O0O00O0OO000O0O0O .token +'","capabilities":125,"properties":{"os":"Windows NT","browser":"Chrome","device":"","system_locale":"it-IT","browser_user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36","browser_version":"119.0","os_version":"10","referrer":"","referring_domain":"","referrer_current":"","referring_domain_current":"","release_channel":"stable","client_build_number":103981,"client_event_source":null},"presence":{"status":"online","since":0,"activities":[],"afk":false},"compress":false,"client_state":{"guild_hashes":{},"highest_last_message_id":"0","read_state_version":0,"user_guild_settings_version":-1,"user_settings_version":-1}}}')#line:824
+    def heartbeatThread (O0O0000000000O0O0 ,O0OOOO0OOOOO0O000 ):#line:826
+        try :#line:827
+            while True :#line:828
+                O0O0000000000O0O0 .send ('{"op":1,"d":'+str (O0O0000000000O0O0 .packets_recv )+"}")#line:829
+                time .sleep (O0OOOO0OOOOO0O000 )#line:830
+        except Exception as OO0O0O0OOOO0OO000 :#line:831
+            pass #line:832
+    def sock_message (O0OO000OOO0O0O0OO ,OOO00000O000O00OO ,O00OOOO0OO00000OO ):#line:834
+        OOOO0O0000O0O0OOO =json .loads (O00OOOO0OO00000OO )#line:835
+        if OOOO0O0000O0O0OOO is None :#line:836
+            return #line:837
+        if OOOO0O0000O0O0OOO ["op"]!=11 :#line:838
+            O0OO000OOO0O0O0OO .packets_recv +=1 #line:839
+        if OOOO0O0000O0O0OOO ["op"]==10 :#line:840
+            threading .Thread (target =O0OO000OOO0O0O0OO .heartbeatThread ,args =(OOOO0O0000O0O0OOO ["d"]["heartbeat_interval"]/1000 ,),daemon =True ,).start ()#line:845
+        if OOOO0O0000O0O0OOO ["t"]=="READY":#line:846
+            for O0OOO0O0O0000O0OO in OOOO0O0000O0O0OOO ["d"]["guilds"]:#line:847
+                O0OO000OOO0O0O0OO .guilds [O0OOO0O0O0000O0OO ["id"]]={"member_count":O0OOO0O0O0000O0OO ["member_count"]}#line:848
+        if OOOO0O0000O0O0OOO ["t"]=="READY_SUPPLEMENTAL":#line:849
+            O0OO000OOO0O0O0OO .ranges =Utils .getRanges (0 ,100 ,O0OO000OOO0O0O0OO .guilds [O0OO000OOO0O0O0OO .guild_id ]["member_count"])#line:852
+            O0OO000OOO0O0O0OO .scrapeUsers ()#line:853
+        elif OOOO0O0000O0O0OOO ["t"]=="GUILD_MEMBER_LIST_UPDATE":#line:854
+            O000OOO0O000OOOOO =Utils .parseGuildMemberListUpdate (OOOO0O0000O0O0OOO )#line:855
+            if O000OOO0O000OOOOO ["guild_id"]==O0OO000OOO0O0O0OO .guild_id and ("SYNC"in O000OOO0O000OOOOO ["types"]or "UPDATE"in O000OOO0O000OOOOO ["types"]):#line:859
+                for O0OO00O0O00000OO0 ,O00OOOO000OO00O0O in enumerate (O000OOO0O000OOOOO ["types"]):#line:860
+                    if O00OOOO000OO00O0O =="SYNC":#line:861
+                        if len (O000OOO0O000OOOOO ["updates"][O0OO00O0O00000OO0 ])==0 :#line:862
+                            O0OO000OOO0O0O0OO .endScraping =True #line:863
+                            break #line:864
+                        for O000O00000OOOOOOO in O000OOO0O000OOOOO ["updates"][O0OO00O0O00000OO0 ]:#line:866
+                            if "member"in O000O00000OOOOOOO :#line:867
+                                OOOOO0OOO0O0000O0 =O000O00000OOOOOOO ["member"]#line:868
+                                O0O0OOO0OOO0OO0OO ={"tag":OOOOO0OOO0O0000O0 ["user"]["username"]+"#"+OOOOO0OOO0O0000O0 ["user"]["discriminator"],"id":OOOOO0OOO0O0000O0 ["user"]["id"],}#line:874
+                                if not OOOOO0OOO0O0000O0 ["user"].get ("bot"):#line:875
+                                    O0OO000OOO0O0O0OO .members [OOOOO0OOO0O0000O0 ["user"]["id"]]=O0O0OOO0OOO0OO0OO #line:876
+                    elif O00OOOO000OO00O0O =="UPDATE":#line:878
+                        for O000O00000OOOOOOO in O000OOO0O000OOOOO ["updates"][O0OO00O0O00000OO0 ]:#line:879
+                            if "member"in O000O00000OOOOOOO :#line:880
+                                OOOOO0OOO0O0000O0 =O000O00000OOOOOOO ["member"]#line:881
+                                O0O0OOO0OOO0OO0OO ={"tag":OOOOO0OOO0O0000O0 ["user"]["username"]+"#"+OOOOO0OOO0O0000O0 ["user"]["discriminator"],"id":OOOOO0OOO0O0000O0 ["user"]["id"],}#line:887
+                                if not OOOOO0OOO0O0000O0 ["user"].get ("bot"):#line:888
+                                    O0OO000OOO0O0O0OO .members [OOOOO0OOO0O0000O0 ["user"]["id"]]=O0O0OOO0OOO0OO0OO #line:889
+                    O0OO000OOO0O0O0OO .lastRange +=1 #line:891
+                    O0OO000OOO0O0O0OO .ranges =Utils .getRanges (O0OO000OOO0O0O0OO .lastRange ,100 ,O0OO000OOO0O0O0OO .guilds [O0OO000OOO0O0O0OO .guild_id ]["member_count"])#line:894
+                    time .sleep (0.45 )#line:895
+                    O0OO000OOO0O0O0OO .scrapeUsers ()#line:896
+            if O0OO000OOO0O0O0OO .endScraping :#line:898
+                O0OO000OOO0O0O0OO .close ()#line:899
+    def sock_close (OO00OOOOO00000O00 ,OO0O0OOO0OO0O0O0O ,OOOO000O0O0OO00OO ,O0OOOOOOO0OO0O0O0 ):#line:901
+        pass #line:902
+def scrape (O00O0O0OO0O0O0000 ,O00OOOOO0OOO0000O ,OOOOOO000000O000O ):#line:904
+    OO0OOOOO0O0O00OO0 =DiscordSocket (O00O0O0OO0O0O0000 ,O00OOOOO0OOO0000O ,OOOOOO000000O000O )#line:905
+    return OO0OOOOO0O0O00OO0 .run ()#line:906
+def member_scrape (O000OOOO00000OO00 ,OO00OOO00000OO0O0 ,O00O00O0000000000 ):#line:908
+    O0OO0OO00OO00OO0O =[]#line:909
+    for OOO0O0000O0OO0OOO in O000OOOO00000OO00 :#line:910
+        O0OO0000OOOOOO00O ={"Authorization":OOO0O0000O0OO0OOO ,"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"}#line:911
+        O0O00OOOOO0O0OOOO =session .get (f"https://canary.discord.com/api/v9/guilds/{OO00OOO00000OO0O0}",headers =O0OO0000OOOOOO00O )#line:912
+        if O0O00OOOOO0O0OOOO .status_code ==200 :#line:913
+            O0OO0OO00OO00OO0O .append (OOO0O0000O0OO0OOO )#line:914
+            break #line:915
+    if not O0OO0OO00OO00OO0O :#line:916
+        print ("missing access")#line:917
+    OOO0O0000O0OO0OOO =random .choice (O0OO0OO00OO00OO0O )#line:919
+    OO000OO0O000O0OOO =scrape (OOO0O0000O0OO0OOO ,OO00OOO00000OO0O0 ,O00O00O0000000000 )#line:920
+    OOOOO0O0O0O000OOO =[f"<@{O0OO0O0O0OO0OOO00}>"for O0OO0O0O0OO0OOO00 in [int (OOO00OO000OO00O0O )for OOO00OO000OO00O0O in OO000OO0O000O0OOO .keys ()]]#line:921
+    print (f"[SUCCESS] {len(OOOOO0O0O0O000OOO)} scraped members")#line:922
+    return OOOOO0O0O0O000OOO #line:923
+def spammer_menu ():#line:925
+    try :#line:926
+        with open ("token.txt")as OO0OOO0O0OO0OOOOO :#line:927
+            OOOOO00O00O00OOO0 =[OOOO0OO0O00O00OOO .strip ()for OOOO0OO0O00O00OOO in OO0OOO0O0OO0OOOOO .readlines ()if OOOO0OO0O00O00OOO .strip ()]#line:928
+    except (FileNotFoundError ,KeyError ):#line:929
+        print (f"{colorama.Fore.RED}    [!] Error: token.txt file not found or no valid tokens!{colorama.Fore.RESET}")#line:930
+        return #line:931
+    O0OOOOO00O0OO0OOO =input ("Server ID?: ").strip ()#line:933
+    O0000O0O0OO00O0O0 =input ("Message?: ").strip ()#line:934
+    O0O000OO0000O0OOO =input ("Random mention (True/False)?: ").strip ().lower ()=='true'#line:935
+    O00000O00OO0OOO00 =input ("Delay between messages (in seconds)?: ").strip ()#line:936
+    OOO00OO000000OOO0 =input ("Number of messages to send?: ").strip ()#line:937
+    OO0OO0OO000OOO00O =input ("Blacklist User IDs (comma-separated) (Leave blank to skip)?: ").strip ().split (',')#line:938
+    OO0OO0OO000OOO00O =[f"<@{O00OO00OOO00OO000.strip()}>"for O00OO00OOO00OO000 in OO0OO0OO000OOO00O if O00OO00OOO00OO000 .strip ()]#line:939
+    try :#line:941
+        O00000O00OO0OOO00 =float (O00000O00OO0OOO00 )#line:942
+        if O00000O00OO0OOO00 <0 :#line:943
+            raise ValueError #line:944
+    except ValueError :#line:945
+        print (f"{colorama.Fore.RED}    [!] Invalid delay. Using default delay of 1 second.{colorama.Fore.RESET}")#line:946
+        O00000O00OO0OOO00 =1.0 #line:947
+    try :#line:949
+        OOO00OO000000OOO0 =int (OOO00OO000000OOO0 )#line:950
+        if OOO00OO000000OOO0 <=0 :#line:951
+            raise ValueError #line:952
+    except ValueError :#line:953
+        print (f"{colorama.Fore.RED}    [!] Invalid send count. Using default count of 1.{colorama.Fore.RESET}")#line:954
+        OOO00OO000000OOO0 =1 #line:955
+    O00OOOOOOO0000000 =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:957
+    if O00OOOOOOO0000000 =='2':#line:958
+        OOO00000O0000O0O0 =input ("Enter Channel IDs (comma-separated)?: ").strip ().split (',')#line:959
+        OOO00000O0000O0O0 =[O0OO0O0OO0O0OOO0O .strip ()for O0OO0O0OO0O0OOO0O in OOO00000O0000O0O0 if O0OO0O0OO0O0OOO0O .strip ()]#line:960
+    else :#line:961
+        OOO00000O0000O0O0 =fetch_channels (OOOOO00O00O00OOO0 [0 ],O0OOOOO00O0OO0OOO )#line:962
+    OO00OOOOO0O00O000 =None #line:964
+    spammer (OOOOO00O00O00OOO0 ,O0OOOOO00O0OO0OOO ,OOO00000O0000O0O0 ,O0000O0O0OO00O0O0 ,O0O000OO0000O0OOO ,OO0OO0OO000OOO00O ,OO00OOOOO0O00O000 ,OOO00OO000000OOO0 )#line:966
+    input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:969
+def buildnumget (OOOO00O000OO0OO0O ):#line:971
+  OOO0OO00OO0O0O0OO =OOOO00O000OO0OO0O .get ('https://discord.com/login',headers ={'Accept-Encoding':'gzip, deflate'},timeout =7 )#line:972
+  OOO0O0OOOOOOOOO0O =OOO0OO00OO0O0O0OO .text #line:973
+import discum #line:975
+import random #line:976
+import time #line:977
+def userget (O000OOOO0000000O0 ,OOOO0O0OOOOOOOOO0 ,OOO0OO0OOOO00O0OO ):#line:979
+    OO000O0OO0O00OOOO =[]#line:980
+    OO00O00OO000OO00O =discum .Client (token =O000OOOO0000000O0 ,log =False )#line:981
+    def OOO0OO0000O0O00OO (O0OO0OOO0O0OOO000 ):#line:983
+        if OO00O00OO000OO00O .gateway .finishedMemberFetching (OOOO0O0OOOOOOOOO0 ):#line:984
+            OOOOOOO0O00O000OO =len (OO00O00OO000OO00O .gateway .session .guild (OOOO0O0OOOOOOOOO0 ).members )#line:985
+            print (str (OOOOOOO0O00O000OO )+' members fetched')#line:986
+            OO00O00OO000OO00O .gateway .removeCommand ({'function':OOO0OO0000O0O00OO ,'params':{}})#line:987
+            OO00O00OO000OO00O .gateway .close ()#line:988
+    def O0000OO0O0O0O0OOO (OOOOO0O0OOO00O0O0 ,OO00OOOOO0OO0O0OO ):#line:990
+        OO00O00OO000OO00O .gateway .fetchMembers (OOOOO0O0OOO00O0O0 ,OO00OOOOO0OO0O0OO ,keep ='all',wait =1 )#line:991
+        OO00O00OO000OO00O .gateway .command ({'function':OOO0OO0000O0O00OO ,'params':{}})#line:992
+        OO00O00OO000OO00O .gateway .run ()#line:993
+        OO00O00OO000OO00O .gateway .resetSession ()#line:994
+        return OO00O00OO000OO00O .gateway .session .guild (OOOOO0O0OOO00O0O0 ).members #line:995
+    OO0OOOO0OOOO0O0O0 =O0000OO0O0O0O0OOO (OOOO0O0OOOOOOOOO0 ,OOO0OO0OOOO00O0OO )#line:997
+    for O0000O0O0000O00O0 in OO0OOOO0OOOO0O0O0 :#line:998
+        if O0000O0O0000O00O0 not in OO000O0OO0O00OOOO :#line:999
+            OO000O0OO0O00OOOO .append (f"<@{O0000O0O0000O00O0}>")#line:1000
+    return OO000O0OO0O00OOOO #line:1001
+def spammer (O0O00OOOOOO0OOO00 ,O0O0O0O00OO0O0OOO ,O0OO00O0O00O0OO0O ,O0O0O0OO0OO00OO0O ,O00OO00O0000OO000 ,O0O00O0OO00OO00OO ,OO0O0OO0OOOO00000 ,O0O00OO000OOOOO0O ):#line:1006
+    OO00OOOO000O000OO =get_session (OO0O0OO0OOOO00000 )#line:1007
+    O0O0OO0OO0OO0O0O0 =0 #line:1008
+    O0000O00OO0O0OOO0 =userget (O0O00OOOOOO0OOO00 [0 ],O0O0O0O00OO0O0OOO ,O0OO00O0O00O0OO0O [0 ])#line:1010
+    O0000O00OO0O0OOO0 =[OOOOOOOOOO0O00OOO for OOOOOOOOOO0O00OOO in O0000O00OO0O0OOO0 if OOOOOOOOOO0O00OOO not in O0O00O0OO00OO00OO ]#line:1013
+    for _OOO000000O0OOO000 in range (O0O00OO000OOOOO0O ):#line:1015
+        O000OOO0000000O0O =O0O00OOOOOO0OOO00 [O0O0OO0OO0OO0O0O0 ]#line:1016
+        OO0000OOO00OO0OOO =get_headers (O000OOO0000000O0O )#line:1017
+        for OOOO0OO0000O00000 in O0OO00O0O00O0OO0O :#line:1018
+            OOOOO00OOOOOOOO00 =O0O0O0OO0OO00OO0O #line:1019
+            if O00OO00O0000OO000 and O0000O00OO0O0OOO0 :#line:1020
+                OO0O0O000OO00OOOO =random .choice (O0000O00OO0O0OOO0 )#line:1021
+                OOOOO00OOOOOOOO00 +=f" {OO0O0O000OO00OOOO}"#line:1022
+            O00OOO0O00OO00OOO =OO00OOOO000O000OO .post (f"https://discord.com/api/v9/channels/{OOOO0OO0000O00000}/messages",json ={"content":OOOOO00OOOOOOOO00 },headers =OO0000OOO00OO0OOO )#line:1024
+            if O00OOO0O00OO00OOO .status_code ==200 :#line:1025
+                print (f"200 message sent: {O000OOO0000000O0O}")#line:1026
+            elif O00OOO0O00OO00OOO .status_code ==429 :#line:1027
+                print (f"429 rate limit: {O000OOO0000000O0O}")#line:1028
+                OOO0O0OOO0O0OO0OO =O00OOO0O00OO00OOO .json ().get ("retry_after",1 )#line:1029
+                time .sleep (OOO0O0OOO0O0OO0OO )#line:1030
+            elif O00OOO0O00OO00OOO .status_code ==401 :#line:1031
+                print (f"401 unknown token: {O000OOO0000000O0O}")#line:1032
+            else :#line:1033
+                print (f"error: {O000OOO0000000O0O}")#line:1034
+        O0O0OO0OO0OO0O0O0 =(O0O0OO0OO0OO0O0O0 +1 )%len (O0O00OOOOOO0OOO00 )#line:1036
+        time .sleep (1 )#line:1037
+import requests #line:1041
+import base64 #line:1042
+import colorama #line:1043
+import time #line:1044
+def add_emojis_from_files ():#line:1046
+    try :#line:1047
+        with open ("emojiname.txt")as OO00O00O0OO00O0O0 ,open ("emojiurl.txt")as OO0O0OOO0O00O00OO :#line:1048
+            O000O00O0OO0OOOOO =[OO00OOO00O00OOO00 .strip ()for OO00OOO00O00OOO00 in OO00O00O0OO00O0O0 .read ().split (',')if OO00OOO00O00OOO00 .strip ()]#line:1049
+            O000OO000000OO0O0 =[O00O000000O0O0O0O .strip ()for O00O000000O0O0O0O in OO0O0OOO0O00O00OO .read ().split (',')if O00O000000O0O0O0O .strip ()]#line:1050
+    except FileNotFoundError as OO0000O0O0OO000OO :#line:1051
+        print (f"{colorama.Fore.RED}    [!] Error: {str(OO0000O0O0OO000OO)}{colorama.Fore.RESET}")#line:1052
+        return #line:1053
+    if len (O000O00O0OO0OOOOO )!=len (O000OO000000OO0O0 ):#line:1055
+        print (f"{colorama.Fore.RED}    [!] Error: The number of emoji names and URLs do not match!{colorama.Fore.RESET}")#line:1056
+        return #line:1057
+    try :#line:1059
+        with open ("token.txt")as OO0O0OOOO0OOO00OO :#line:1060
+            OOOOO0OOO00OO0O00 =[OOOOOOOOOO0O0O0O0 .strip ()for OOOOOOOOOO0O0O0O0 in OO0O0OOOO0OOO00OO .readlines ()if OOOOOOOOOO0O0O0O0 .strip ()]#line:1061
+    except FileNotFoundError as OO0000O0O0OO000OO :#line:1062
+        print (f"{colorama.Fore.RED}    [!] Error: {str(OO0000O0O0OO000OO)}{colorama.Fore.RESET}")#line:1063
+        return #line:1064
+    O0OOO0OOO000O0O0O =input ("Enter the Guild ID: ").strip ()#line:1066
+    O00000OOO0O000O0O =input ("Enter the rate limit between requests (in seconds): ").strip ()#line:1067
+    try :#line:1069
+        O00000OOO0O000O0O =float (O00000OOO0O000O0O )#line:1070
+        if O00000OOO0O000O0O <0 :#line:1071
+            raise ValueError #line:1072
+    except ValueError :#line:1073
+        print (f"{colorama.Fore.RED}    [!] Invalid rate limit. Using default rate limit of 5 seconds.{colorama.Fore.RESET}")#line:1074
+        O00000OOO0O000O0O =5.0 #line:1075
+    OOO0000OO0OOO00OO =set ()#line:1077
+    for O00O0O000O0OO0OO0 in OOOOO0OOO00OO0O00 :#line:1079
+        OOOO0O0O00O00OO00 ={'Authorization':O00O0O000O0OO0OO0 ,'Content-Type':'application/json'}#line:1083
+        OOOOOO0O0000O0O00 =requests .get (f"https://discord.com/api/v9/guilds/{O0OOO0OOO000O0O0O}/emojis",headers =OOOO0O0O00O00OO00 )#line:1086
+        if OOOOOO0O0000O0O00 .status_code ==200 :#line:1087
+            O0OOO0O0OOO0OO0OO =OOOOOO0O0000O0O00 .json ()#line:1088
+            for OOOOO00000OOOO00O in O0OOO0O0OOO0OO0OO :#line:1089
+                OOO0000OO0OOO00OO .add (OOOOO00000OOOO00O ['name'])#line:1090
+        else :#line:1091
+            print (f"{colorama.Fore.RED}    [!] Error fetching existing emojis: {OOOOOO0O0000O0O00.status_code} - {OOOOOO0O0000O0O00.text}{colorama.Fore.RESET}")#line:1092
+            continue #line:1093
+    for O000O0OOO0O00OO00 ,O0O0OO0O0OOOO0000 in zip (O000O00O0OO0OOOOO ,O000OO000000OO0O0 ):#line:1095
+        if O000O0OOO0O00OO00 in OOO0000OO0OOO00OO :#line:1096
+            print (f"{colorama.Fore.YELLOW}    [*] Emoji '{O000O0OOO0O00OO00}' already exists. Skipping...{colorama.Fore.RESET}")#line:1097
+            continue #line:1098
+        for O00O0O000O0OO0OO0 in OOOOO0OOO00OO0O00 :#line:1100
+            try :#line:1101
+                OOOOOO0O0000O0O00 =requests .get (O0O0OO0O0OOOO0000 )#line:1102
+                OOOOOO0O0000O0O00 .raise_for_status ()#line:1103
+                OO00O0O00OO0OO000 =OOOOOO0O0000O0O00 .content #line:1104
+                OOOO0OOOO000O0O00 =base64 .b64encode (OO00O0O00OO0OO000 ).decode ('utf-8')#line:1105
+                O00OO0O0O00OO000O ={'name':O000O0OOO0O00OO00 ,'image':f"data:image/png;base64,{OOOO0OOOO000O0O00}"}#line:1110
+                OOOO0O0O00O00OO00 ={'Authorization':O00O0O000O0OO0OO0 ,'Content-Type':'application/json'}#line:1115
+                O00OO000O0O00O0OO =requests .post (f"https://discord.com/api/v9/guilds/{O0OOO0OOO000O0O0O}/emojis",headers =OOOO0O0O00O00OO00 ,json =O00OO0O0O00OO000O )#line:1117
+                if O00OO000O0O00O0OO .status_code ==201 :#line:1118
+                    print (f"{colorama.Fore.GREEN}    [+] Successfully added emoji '{O000O0OOO0O00OO00}' with token {O00O0O000O0OO0OO0}{colorama.Fore.RESET}")#line:1119
+                    OOO0000OO0OOO00OO .add (O000O0OOO0O00OO00 )#line:1120
+                    break #line:1121
+                else :#line:1122
+                    print (f"{colorama.Fore.RED}    [!] Failed to add emoji '{O000O0OOO0O00OO00}' with token {O00O0O000O0OO0OO0}: {O00OO000O0O00O0OO.status_code} - {O00OO000O0O00O0OO.text}{colorama.Fore.RESET}")#line:1123
+                time .sleep (O00000OOO0O000O0O )#line:1125
+            except Exception as OO0000O0O0OO000OO :#line:1126
+                print (f"{colorama.Fore.RED}    [!] Error adding emoji '{O000O0OOO0O00OO00}' with token {O00O0O000O0OO0OO0}: {str(OO0000O0O0OO000OO)}{colorama.Fore.RESET}")#line:1127
+import random #line:1129
+import requests #line:1130
+import time #line:1131
+def pollspammer (OOO0O0O0000OO0O0O ,OO0O000O00O0OOO00 ,O0O0O0O0000OOO000 ,O0OO0000OOOOO000O ,O0O0O0O0OO000O0OO ,OO00OO0OOOO00O0OO ,OOOO000O0OO0O00OO ,OO0O0OOOO000O000O ,OOO0OOOOO000000O0 ,OOO0O000OO00OOO00 ,OO00O0OOOOO000000 ):#line:1133
+    O0O00OO0O00OOOOO0 =get_session ()#line:1134
+    O000O000000000OOO =0 #line:1135
+    OOO00O00000OOO0O0 =userget (OOO0O0O0000OO0O0O [0 ],OO0O000O00O0OOO00 ,O0O0O0O0000OOO000 [0 ])#line:1137
+    OOO00O00000OOO0O0 =[OOO0O00O0O0OO0O0O for OOO0O00O0O0OO0O0O in OOO00O00000OOO0O0 if OOO0O00O0O0OO0O0O not in OOO0OOOOO000000O0 ]#line:1140
+    for _OO0OO0OO00OOO0O0O in range (OOO0O000OO00OOO00 ):#line:1142
+        O00O0OO00OO00000O =OOO0O0O0000OO0O0O [O000O000000000OOO ]#line:1143
+        O0OO00OOOO0OOOOO0 =get_headers (O00O0OO00OO00000O )#line:1144
+        for O0000OOO0000OOO00 in O0O0O0O0000OOO000 :#line:1149
+            OOO0OO0OOO00O0OOO =[{"poll_media":{"text":OOO00OO00O0OO0OOO .strip ()}}for OOO00OO00O0OO0OOO in O0O0O0O0OO000O0OO .split (',')]#line:1150
+            OOOOO000OO0000000 ={"mobile_network_type":"unknown","content":"","nonce":str (random .randint (10 **17 ,10 **18 -1 )),"tts":False ,"flags":0 ,"poll":{"question":{"text":O0OO0000OOOOO000O },"answers":OOO0OO0OOO00O0OOO ,"allow_multiselect":False ,"duration":OO00OO0OOOO00O0OO ,"layout_type":1 }}#line:1164
+            if OOOO000O0OO0O00OO and OOO00O00000OOO0O0 :#line:1166
+                OO0OOOOO0O00OO000 =random .choice (OOO00O00000OOO0O0 )#line:1168
+                O000O00O00OOOOOOO ={"content":f"{OO0O0OOOO000O000O} {OO0OOOOO0O00OO000}","tts":False ,"nonce":str (random .randint (10 **17 ,10 **18 -1 ))}#line:1173
+                OO00O00O0O000OOO0 =O0O00OO0O00OOOOO0 .post (f"https://discord.com/api/v9/channels/{O0000OOO0000OOO00}/messages",json =O000O00O00OOOOOOO ,headers =O0OO00OOOO0OOOOO0 )#line:1174
+                if OO00O00O0O000OOO0 .status_code !=200 :#line:1175
+                    print (f"Failed to send mention: {OO00O00O0O000OOO0.status_code} - {OO00O00O0O000OOO0.text}")#line:1176
+            O000000OO00000O00 =O0O00OO0O00OOOOO0 .post (f"https://discord.com/api/v9/channels/{O0000OOO0000OOO00}/messages",json =OOOOO000OO0000000 ,headers =O0OO00OOOO0OOOOO0 )#line:1178
+            if O000000OO00000O00 .status_code ==200 :#line:1179
+                print (f"200 poll message sent: {O00O0OO00OO00000O}")#line:1180
+            elif O000000OO00000O00 .status_code ==429 :#line:1181
+                print (f"429 rate limit: {O00O0OO00OO00000O}")#line:1182
+                O0OO000OO0O00OOO0 =O000000OO00000O00 .json ().get ("retry_after",1 )#line:1183
+                time .sleep (O0OO000OO0O00OOO0 )#line:1184
+            elif O000000OO00000O00 .status_code ==401 :#line:1185
+                print (f"401 unknown token: {O00O0OO00OO00000O}")#line:1186
+            else :#line:1187
+                print (f"error: {O00O0OO00OO00000O} - {O000000OO00000O00.status_code}: {O000000OO00000O00.text}")#line:1188
+        O000O000000000OOO =(O000O000000000OOO +1 )%len (OOO0O0O0000OO0O0O )#line:1190
+        time .sleep (OO00O0OOOOO000000 )#line:1191
+def pollspammermenu ():#line:1194
+    with open ("token.txt")as OO0O0OOO00O00O0OO :#line:1195
+        OO0OO0OOOO00OOO0O =[O0OO0OOOO0O000OO0 .strip ()for O0OO0OOOO0O000OO0 in OO0O0OOO00O00O0OO .readlines ()if O0OO0OOOO0O000OO0 .strip ()]#line:1196
+    O00O0O0O0OO000000 =input ("Enter Server ID: ").strip ()#line:1198
+    O0O00OOOO00O0O00O =input ("Send to (1) all channels or (2) specific channel(s)?: ").strip ()#line:1199
+    if O0O00OOOO00O0O00O =='2':#line:1200
+        O0O00OO0O0O0O00O0 =input ("Enter Channel IDs (comma-separated): ").strip ().split (',')#line:1201
+    else :#line:1202
+        O0O00OO0O0O0O00O0 =[]#line:1203
+        for O000OOOO00O0OO0OO in OO0OO0OOOO00OOO0O :#line:1204
+            try :#line:1205
+                O0O00OO0O0O0O00O0 .extend (fetch_channels (O000OOOO00O0OO0OO ,O00O0O0O0OO000000 ))#line:1206
+            except Exception as OO00O0000OOO00O00 :#line:1207
+                print (f"[!] Failed to fetch channels for token. Error: {OO00O0000OOO00O00}")#line:1208
+                continue #line:1209
+        random .shuffle (O0O00OO0O0O0O00O0 )#line:1210
+    O0O00000OO0O0000O =input ("Enter poll title: ").strip ()#line:1212
+    O0OOO00O00OO0O0O0 =input ("Enter poll answers (comma-separated): ").strip ()#line:1213
+    OO00O0O0OOO0OO0OO =int (input ("Enter poll duration (in hours 1/4/8/24/72/168/336 ): ").strip ())#line:1214
+    OOO0OOOO000O00000 =input ("Do you want to mention random users? (true/false): ").strip ().lower ()=='true'#line:1215
+    OO0O0O0000OO0OO0O =""#line:1216
+    if OOO0OOOO000O00000 :#line:1217
+        OO0O0O0000OO0OO0O =input ("Enter the message to prepend to the mention: ").strip ()#line:1218
+    O0O0O0O0O0OOO0O0O =input ("Enter blacklist user IDs (comma-separated): ").strip ().split (',')#line:1219
+    O0OOOO0O0O0OO0O00 =int (input ("Enter number of send poll: ").strip ())#line:1220
+    OO000O00O0O0OO0O0 =float (input ("Enter delay between posts (in seconds): ").strip ())#line:1221
+    pollspammer (OO0OO0OOOO00OOO0O ,O00O0O0O0OO000000 ,O0O00OO0O0O0O00O0 ,O0O00000OO0O0000O ,O0OOO00O00OO0O0O0 ,OO00O0O0OOO0OO0OO ,OOO0OOOO000O00000 ,OO0O0O0000OO0OO0O ,O0O0O0O0O0OOO0O0O ,O0OOOO0O0O0OO0O00 ,OO000O00O0O0OO0O0 )#line:1223
+def main ():#line:1226
+    colorama .init ()#line:1227
+    while True :#line:1228
+        logo ()#line:1229
+        OOO00O0O00000O00O =input (f"{colorama.Fore.LIGHTMAGENTA_EX}    [Final] Select an option from above: ")#line:1230
+        if OOO00O0O00000O00O =="0":#line:1232
+            update_group_ids ()#line:1233
+        elif OOO00O0O00000O00O =="1":#line:1234
+            join_discord_invite ()#line:1235
+        elif OOO00O0O00000O00O =="2":#line:1236
+            reaction_spammer ()#line:1237
+        elif OOO00O0O00000O00O =="3":#line:1238
+            send_messages_with_mentions ()#line:1239
+        elif OOO00O0O00000O00O =="4":#line:1240
+            spammer_menu ()#line:1241
+        elif OOO00O0O00000O00O =="5":#line:1242
+            nickchanger ()#line:1243
+        elif OOO00O0O00000O00O =="6":#line:1244
+            add_emojis_from_files ()#line:1245
+        elif OOO00O0O00000O00O =="7":#line:1246
+            reaction_art ()#line:1247
+        elif OOO00O0O00000O00O =="8":#line:1248
+            pollspammermenu ()#line:1249
+        elif OOO00O0O00000O00O =="0":#line:1250
+            print (f"{colorama.Fore.LIGHTGREEN_EX}    [*] Exiting the application. Goodbye!{colorama.Fore.RESET}")#line:1251
+            break #line:1252
+        else :#line:1253
+            print (f"{colorama.Fore.RED}    [!] Invalid option selected!{colorama.Fore.RESET}")#line:1254
+        input (f"{colorama.Fore.LIGHTCYAN_EX}Press Enter to return to the main menu...{colorama.Fore.RESET}")#line:1256
+if __name__ =="__main__":#line:1258
+    main ()#line:1259
