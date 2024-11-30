@@ -28,11 +28,14 @@ https://www.python.org/
 Test version
  
 Features
-Add reactions to the last 100 messages on all channels (channel can be specified)
-Mention mode to only active users (useful for bot padding)
-Do not get bot's uid.
-Add pictograms
-Reaction art
+    [1] server join
+    [2] mass Reaction spammer
+    [3] active users only mentions
+    [4] all user mentions
+    [5] nickname changer
+    [6] emoji add
+    [7] reaction art
+    [8] poll spammer
 
 Install python from the official site
 https://www.python.org/
