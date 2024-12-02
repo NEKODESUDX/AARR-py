@@ -1,10 +1,5 @@
-テスト版
-以下の依存環境が必要です
-need package
-
-https://d.kuku.lu/ubrxapnbu
-
-依存環境を入れたら解凍してdiscumフォルダーをmain.pyがあるフォルダーと同じ場所に入れてください
+依存環境が最初から入ってるバージョン
+→　https://d.kuku.lu/rj5zgdgvd
  
 機能
 ・全チャンネルの過去100件のメッセージにリアクション追加(チャンネル指定可能)
@@ -26,6 +21,10 @@ https://www.python.org/
 絵文字追加時の名前指定はemojiname.txt
 絵文字url指定はemojiurl.txt
 
+以下の依存環境が必要です
+need package
+https://d.kuku.lu/ubrxapnbu
+依存環境を入れたら解凍してdiscumフォルダーをmain.pyがあるフォルダーと同じ場所に入れてください
 Test version
  
 Features
