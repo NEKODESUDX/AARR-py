@@ -1,3 +1,4 @@
+ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 依存環境が最初から入ってるバージョン
 release
 →　https://d.kuku.lu/rj5zgdgvd
@@ -8,6 +9,7 @@ release
 ・botのuidを取得しない
 ・絵文字追加
 ・リアクションアート(リアクションは一つのメッセージに二つ以上同じリアクションは付けれないので注意)
+・投票荒らし機能 
 
 pythonを公式サイトからインストール
 https://www.python.org/
@@ -26,17 +28,18 @@ https://www.python.org/
 need package
 https://d.kuku.lu/ubrxapnbu
 依存環境を入れたら解凍してdiscumフォルダーをmain.pyがあるフォルダーと同じ場所に入れてください
-Test version
+ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
+Version with dependencies included from the beginning
+release
+→ https://d.kuku.lu/rj5zgdgvd
  
 Features
-    [1] server join
-    [2] mass Reaction spammer
-    [3] active users only mentions
-    [4] all user mentions
-    [5] nickname changer
-    [6] emoji add
-    [7] reaction art
-    [8] poll spammer
+Add reactions to the last 100 messages on all channels (channels can be specified)
+Mention mode to only active users (useful for bot-adding mackerels)
+Do not get bot's uid.
+Add pictograms
+Reaction art (Note that no more than two reactions can be the same for a single message.)
+Voting trolling function 
 
 Install python from the official site
 https://www.python.org/
@@ -49,8 +52,13 @@ Run “build.bat
 
 Set reaction art in art.txt
 Specify the name for adding pictograms in emojiname.txt
-Specify the pictogram url in emojiurl.txt
+emojiurl.txt for specifying the pictogram url
+
+The following dependencies are required
+need package
+https://d.kuku.lu/ubrxapnbu
+After installing the dependencies, unzip the package and put the discum folder in the same location as the main.py folder.
 
 Translated with DeepL.com (free version)
-
+ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
 ![image](https://i.imgur.com/oVyh6dg.png)
